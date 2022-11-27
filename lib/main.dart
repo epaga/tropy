@@ -33,29 +33,54 @@ class Region {
   }
   firstRoundPick(s) {
     int index = Data.pairings.indexWhere((element) => element.a == s || element.b == s);
+    removePicksOfTeamAfter(0, picks[0][index]);
     picks[0][index] = teamBySeed(s);
+  }
+  nullIfTeamIs(Team? teamToCheck, Team? teamToCompareWith) {
+    if (teamToCheck?.name == teamToCompareWith?.name) {
+      return null;
+    } else {
+      return teamToCheck;
+    }
+  }
+  removePicksOfTeamAfter(round, Team? team) {
+    if (team == null) {
+      return;
+    }
+    Data.finalPicks.champ = nullIfTeamIs(Data.finalPicks.champ, team);
+    Data.finalPicks.teamLeft = nullIfTeamIs(Data.finalPicks.teamLeft, team);
+    Data.finalPicks.teamRight = nullIfTeamIs(Data.finalPicks.teamRight, team);
+    int i = round+1;
+    while (i < 4) {
+      int index = picks[i].indexWhere((element) => element?.name == team.name);
+      if (index >= 0) {
+        picks[i][index] = null;
+      } else {
+        break;
+      }
+      i++;
+    }
   }
   pick(round, team) {
     if (round == 4) {
       if (name == Data.regionWest.name ||
           name == Data.regionEast.name) {
+        removePicksOfTeamAfter(round, Data.finalPicks.teamLeft);
         Data.finalPicks.teamLeft = team;
       } else {
+        removePicksOfTeamAfter(round, Data.finalPicks.teamRight);
         Data.finalPicks.teamRight = team;
       }
     } else {
       int index = picks[round-1].indexWhere((element) => element == team);
+      removePicksOfTeamAfter(round, picks[round][index ~/ 2]);
       picks[round][index ~/ 2] = team!;
     }
   }
 }
 
 class FinalPicks {
-  Team? teamLeft = Team(
-      name: "Colgate",
-      seed: 14,
-      region: "MidWest",
-      imageName: "Colgate_Raiders_(2020)_logo.svg.png");
+  Team? teamLeft;
   Team? champ;
   Team? teamRight;
 }
