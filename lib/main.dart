@@ -35,6 +35,19 @@ class Region {
     int index = Data.pairings.indexWhere((element) => element.a == s || element.b == s);
     picks[0][index] = teamBySeed(s);
   }
+  pick(round, team) {
+    if (round == 4) {
+      if (name == Data.regionWest.name ||
+          name == Data.regionEast.name) {
+        Data.finalPicks.teamLeft = team;
+      } else {
+        Data.finalPicks.teamRight = team;
+      }
+    } else {
+      int index = picks[round-1].indexWhere((element) => element == team);
+      picks[round][index ~/ 2] = team!;
+    }
+  }
 }
 
 class FinalPicks {
@@ -96,24 +109,36 @@ class _MyAppState extends State<MyApp> {
                       child: RoundColumn(
                           regionTop: Data.regionWest,
                           regionBottom: Data.regionEast,
+                        refresh: () => {
+                          setState(() {})
+                        },
                           round: 1)),
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
                           regionTop: Data.regionWest,
                           regionBottom: Data.regionEast,
+                        refresh: () => {
+                          setState(() {})
+                        },
                           round: 2)),
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
                           regionTop: Data.regionWest,
                           regionBottom: Data.regionEast,
+                        refresh: () => {
+                          setState(() {})
+                        },
                           round: 3)),
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
                           regionTop: Data.regionWest,
                           regionBottom: Data.regionEast,
+                        refresh: () => {
+                          setState(() {})
+                        },
                           round: 4)),
                   SizedBox(
                       width: 250,
@@ -138,31 +163,54 @@ class _MyAppState extends State<MyApp> {
                           seed: Data.finalPicks.champ?.seed ?? -1)),
                   SizedBox(
                       width: 250,
-                      child: TeamBoxItem(
-                          teamName: "", teamImageName: "", seed: -1)),
+                      child: GestureDetector(
+                          // When the child is tapped, show a snackbar.
+                          onTap: () {
+                            setState(() {
+                              Data.finalPicks.champ = Data.finalPicks.teamRight;
+                            });
+                          },
+                          // The custom button
+                          child: TeamBoxItem(
+                              teamName: Data.finalPicks.teamRight?.name ?? "",
+                              teamImageName:
+                                  Data.finalPicks.teamRight?.imageName ?? "",
+                              seed: Data.finalPicks.teamRight?.seed ?? -1))),
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
                           regionTop: Data.regionSouth,
                           regionBottom: Data.regionMidWest,
+                        refresh: () => {
+                          setState(() {})
+                        },
                           round: 4)),
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
                           regionTop: Data.regionSouth,
                           regionBottom: Data.regionMidWest,
+                        refresh: () => {
+                          setState(() {})
+                        },
                           round: 3)),
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
                           regionTop: Data.regionSouth,
                           regionBottom: Data.regionMidWest,
+                        refresh: () => {
+                          setState(() {})
+                        },
                           round: 2)),
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
                           regionTop: Data.regionSouth,
                           regionBottom: Data.regionMidWest,
+                        refresh: () => {
+                          setState(() {})
+                        },
                           round: 1)),
                   SizedBox(
                       width: 250,
@@ -188,11 +236,13 @@ class RoundColumn extends StatefulWidget {
       {required this.regionTop,
       required this.regionBottom,
       required this.round,
+      required this.refresh,
       super.key});
 
   final Region regionTop;
   final Region regionBottom;
   final int round;
+  final Function() refresh;
 
   @override
   State<RoundColumn> createState() => _RoundColumnState();
@@ -200,17 +250,34 @@ class RoundColumn extends StatefulWidget {
 
 class _RoundColumnState extends State<RoundColumn> {
   final _textStyle = const TextStyle(fontWeight: FontWeight.bold, fontSize: 20);
+
   @override
   Widget build(BuildContext context) {
     var picks = widget.regionTop.picks[widget.round - 1];
     var topList = picks.map((e) {
-      return TeamBoxItem(
-          teamName: e?.name ?? "", teamImageName: e?.imageName ?? "", seed: -1);
+      return             GestureDetector(
+                          // When the child is tapped, show a snackbar.
+                          onTap: () {
+                            widget.regionTop.pick(widget.round, e);
+                            widget.refresh();
+                          },
+                          // The custom button
+                          child: TeamBoxItem(
+          teamName: e?.name ?? "", teamImageName: e?.imageName ?? "", seed: -1)
+          );
     }).toList();
     var bottomPicks = widget.regionBottom.picks[widget.round - 1];
     var bottomList = bottomPicks.map((e) {
-      return TeamBoxItem(
-          teamName: e?.name ?? "", teamImageName: e?.imageName ?? "", seed: -1);
+      return GestureDetector(
+                          // When the child is tapped, show a snackbar.
+                          onTap: () {
+                            widget.regionBottom.pick(widget.round, e);
+                            widget.refresh();
+                          },
+                          // The custom button
+                          child: TeamBoxItem(
+          teamName: e?.name ?? "", teamImageName: e?.imageName ?? "", seed: -1)
+          );
     }).toList();
     final double spaceTop = widget.round == 1
         ? 20
