@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'data.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class Team {
@@ -23,8 +23,7 @@ class Team {
 }
 
 class Region {
-  Region({required this.teams, required this.name,
-  required this.picks});
+  Region({required this.teams, required this.name, required this.picks});
   final List<Team> teams;
   final String name;
   List<List<Team?>> picks;
@@ -35,7 +34,11 @@ class Region {
 }
 
 class FinalPicks {
-  Team? teamLeft;
+  Team? teamLeft = Team(
+      name: "Colgate",
+      seed: 14,
+      region: "MidWest",
+      imageName: "Colgate_Raiders_(2020)_logo.svg.png");
   Team? champ;
   Team? teamRight;
 }
@@ -47,85 +50,123 @@ class Pair<T1, T2> {
   Pair(this.a, this.b);
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Traveling Tropy',
       home: Scaffold(
         body: InteractiveViewer(
-        constrained: false,
-        boundaryMargin: const EdgeInsets.all(20.0),
-        minScale: 0.01,
-        maxScale: 1,
-        child: SizedBox(
-                    width: 3300,
-                    height: 1600,
-                    child:Container(
-            margin: const EdgeInsets.all(15.0),
-            padding: const EdgeInsets.all(3.0),
-            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-            child: Row(
-              children: [
-                SizedBox(
-                    width: 250,
-                    child: TeamColumn(
-                      regionTop: Data.regionWest,
-                      regionBottom: Data.regionEast,
-                    )),
-                SizedBox(
-                    width: 250,
-                    child: RoundColumn(regionTop: Data.regionMidWest, 
-                regionBottom: Data.regionEast, round: 1)),
-                SizedBox(
-                    width: 250,
-                    child: RoundColumn(regionTop: Data.regionMidWest, 
-                regionBottom: Data.regionEast, round: 2)),
-                SizedBox(
-                    width: 250,
-                    child: RoundColumn(regionTop: Data.regionMidWest, 
-                regionBottom: Data.regionEast, round: 3)),
-                SizedBox(
-                    width: 250,
-                    child: RoundColumn(regionTop: Data.regionMidWest, 
-                regionBottom: Data.regionEast, round: 4)),
-                SizedBox(
-                    width: 250,
-                    child: TeamBoxItem(teamName: "", teamImageName: "", seed: -1)),
-                SizedBox(
-                    width: 250,
-                    child: TeamBoxItem(teamName: "", teamImageName: "", seed: -1)),
-                SizedBox(
-                    width: 250,
-                    child: TeamBoxItem(teamName: "", teamImageName: "", seed: -1)),
-                SizedBox(
-                    width: 250,
-                    child: RoundColumn(regionTop: Data.regionMidWest, 
-                regionBottom: Data.regionEast, round: 4)),
-                SizedBox(
-                    width: 250,
-                    child: RoundColumn(regionTop: Data.regionMidWest, 
-                regionBottom: Data.regionEast, round: 3)),
-                SizedBox(
-                    width: 250,
-                    child: RoundColumn(regionTop: Data.regionMidWest, 
-                regionBottom: Data.regionEast, round: 2)),
-                SizedBox(
-                    width: 250,
-                    child: RoundColumn(regionTop: Data.regionMidWest, 
-                regionBottom: Data.regionEast, round: 1)),
-                SizedBox(
-                    width: 250,
-                    child: TeamColumn(
-                      regionTop: Data.regionSouth,
-                      regionBottom: Data.regionMidWest,
-                    )),
-              ],
+          constrained: false,
+          boundaryMargin: const EdgeInsets.all(20.0),
+          minScale: 0.01,
+          maxScale: 1,
+          child: SizedBox(
+            width: 3300,
+            height: 1600,
+            child: Container(
+              margin: const EdgeInsets.all(15.0),
+              padding: const EdgeInsets.all(3.0),
+              decoration:
+                  BoxDecoration(border: Border.all(color: Colors.black)),
+              child: Row(
+                children: [
+                  SizedBox(
+                      width: 250,
+                      child: TeamColumn(
+                        regionTop: Data.regionWest,
+                        regionBottom: Data.regionEast,
+                      )),
+                  SizedBox(
+                      width: 250,
+                      child: RoundColumn(
+                          regionTop: Data.regionMidWest,
+                          regionBottom: Data.regionEast,
+                          round: 1)),
+                  SizedBox(
+                      width: 250,
+                      child: RoundColumn(
+                          regionTop: Data.regionMidWest,
+                          regionBottom: Data.regionEast,
+                          round: 2)),
+                  SizedBox(
+                      width: 250,
+                      child: RoundColumn(
+                          regionTop: Data.regionMidWest,
+                          regionBottom: Data.regionEast,
+                          round: 3)),
+                  SizedBox(
+                      width: 250,
+                      child: RoundColumn(
+                          regionTop: Data.regionMidWest,
+                          regionBottom: Data.regionEast,
+                          round: 4)),
+                  SizedBox(
+                      width: 250,
+                      child: GestureDetector(
+                          // When the child is tapped, show a snackbar.
+                          onTap: () {
+                            setState(() {
+                              Data.finalPicks.champ = Data.finalPicks.teamLeft;
+                            });
+                          },
+                          // The custom button
+                          child: TeamBoxItem(
+                              teamName: Data.finalPicks.teamLeft?.name ?? "",
+                              teamImageName:
+                                  Data.finalPicks.teamLeft?.imageName ?? "",
+                              seed: Data.finalPicks.teamLeft?.seed ?? -1))),
+                  SizedBox(
+                      width: 250,
+                      child: TeamBoxItem(
+                          teamName: Data.finalPicks.champ?.name ?? "",
+                          teamImageName: Data.finalPicks.champ?.imageName ?? "",
+                          seed: Data.finalPicks.champ?.seed ?? -1)),
+                  SizedBox(
+                      width: 250,
+                      child: TeamBoxItem(
+                          teamName: "", teamImageName: "", seed: -1)),
+                  SizedBox(
+                      width: 250,
+                      child: RoundColumn(
+                          regionTop: Data.regionMidWest,
+                          regionBottom: Data.regionEast,
+                          round: 4)),
+                  SizedBox(
+                      width: 250,
+                      child: RoundColumn(
+                          regionTop: Data.regionMidWest,
+                          regionBottom: Data.regionEast,
+                          round: 3)),
+                  SizedBox(
+                      width: 250,
+                      child: RoundColumn(
+                          regionTop: Data.regionMidWest,
+                          regionBottom: Data.regionEast,
+                          round: 2)),
+                  SizedBox(
+                      width: 250,
+                      child: RoundColumn(
+                          regionTop: Data.regionMidWest,
+                          regionBottom: Data.regionEast,
+                          round: 1)),
+                  SizedBox(
+                      width: 250,
+                      child: TeamColumn(
+                        regionTop: Data.regionSouth,
+                        regionBottom: Data.regionMidWest,
+                      )),
+                ],
+              ),
             ),
           ),
-        ),
         ),
       ),
     );
@@ -151,36 +192,55 @@ class _RoundColumnState extends State<RoundColumn> {
   final _textStyle = const TextStyle(fontWeight: FontWeight.bold, fontSize: 20);
   @override
   Widget build(BuildContext context) {
-    var picks = widget.regionTop.picks[widget.round-1];
-    var topList = picks.map( (e) {
-      return TeamBoxItem(teamName: e?.name ?? "", teamImageName: e?.imageName ?? "", seed: -1);
+    var picks = widget.regionTop.picks[widget.round - 1];
+    var topList = picks.map((e) {
+      return TeamBoxItem(
+          teamName: e?.name ?? "", teamImageName: e?.imageName ?? "", seed: -1);
     }).toList();
-    var bottomPicks = widget.regionBottom.picks[widget.round-1];
-    var bottomList = bottomPicks.map( (e) {
-      return TeamBoxItem(teamName: e?.name ?? "", teamImageName: e?.imageName ?? "", seed: -1);
+    var bottomPicks = widget.regionBottom.picks[widget.round - 1];
+    var bottomList = bottomPicks.map((e) {
+      return TeamBoxItem(
+          teamName: e?.name ?? "", teamImageName: e?.imageName ?? "", seed: -1);
     }).toList();
-    final double spaceTop = widget.round == 1 ? 20 :
-widget.round == 2 ? 68 : 
-widget.round == 3 ? 163 : 350;
-    final double spaceInBetween =  widget.round == 1 ? 50 :
-widget.round == 2 ? 144 : 
-widget.round == 3 ? 330 : 700;
+    final double spaceTop = widget.round == 1
+        ? 20
+        : widget.round == 2
+            ? 68
+            : widget.round == 3
+                ? 163
+                : 350;
+    final double spaceInBetween = widget.round == 1
+        ? 50
+        : widget.round == 2
+            ? 144
+            : widget.round == 3
+                ? 330
+                : 700;
     List<Widget> totalList = [];
     totalList.add(Container(
         margin: const EdgeInsets.fromLTRB(0, 0, 0, 3),
-        child:Text("", style:_textStyle)));
-    totalList.add(SizedBox(width: 0, height:spaceTop,));
+        child: Text("", style: _textStyle)));
+    totalList.add(SizedBox(
+      width: 0,
+      height: spaceTop,
+    ));
     topList.forEach((element) {
       totalList.add(element);
-      totalList.add(SizedBox(width: 0, height:spaceInBetween,));
+      totalList.add(SizedBox(
+        width: 0,
+        height: spaceInBetween,
+      ));
     });
     totalList.add(Container(
         margin: const EdgeInsets.fromLTRB(0, 0, 0, 3),
-        child:Text("", style:_textStyle)));
+        child: Text("", style: _textStyle)));
 //    totalList.addAll(topList);
     bottomList.forEach((element) {
       totalList.add(element);
-      totalList.add(SizedBox(width: 0, height:spaceInBetween,));
+      totalList.add(SizedBox(
+        width: 0,
+        height: spaceInBetween,
+      ));
     });
     totalList.removeLast();
     return Column(
@@ -270,13 +330,13 @@ class TeamBoxItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget i = teamImageName == "" ?
-                    SizedBox(width:30, height:30)
- : Image(
-              image: AssetImage('assets/${teamImageName}'),
-              width: 30,
-              height: 30,
-            );
+    Widget i = teamImageName == ""
+        ? SizedBox(width: 30, height: 30)
+        : Image(
+            image: AssetImage('assets/${teamImageName}'),
+            width: 30,
+            height: 30,
+          );
 
     return Container(
         margin: const EdgeInsets.all(3.0),
