@@ -2,11 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'data.dart';
 
-void main() {
+void main() async {
   runApp(MyApp());
+}
+
+Region region( String regionName, List<List<dynamic>> list ) {
+  return Region(name: regionName, picks: [
+  [null,null,null,null,null,null,null,null],
+  [null,null,null,null],
+  [null,null],
+  [null]
+  ], teams:
+  list.where((element) => element[2] == regionName).map((e) => 
+  Team(name: e[0],seed: e[1], region: e[2], imageName: e[3])).toList() );
 }
 
 class Team {
@@ -100,8 +113,20 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  loadInitialData() async {
+    var initialdatacsv = await rootBundle.loadString('assets/initialdata.csv');
+    var list = CsvToListConverter(eol: "\n").convert(initialdatacsv);
+    Data.regionWest = region("West", list);
+    Data.regionEast = region("East", list);
+    Data.regionMidWest = region("MidWest", list);
+    Data.regionSouth = region("South", list);
+    setState(() {});
+  }
   @override
   Widget build(BuildContext context) {
+    if (Data.regionEast.teams.length == 0) {
+      loadInitialData();
+    }
     return MaterialApp(
       title: 'Traveling Tropy',
       home: Scaffold(
@@ -278,6 +303,9 @@ class _RoundColumnState extends State<RoundColumn> {
 
   @override
   Widget build(BuildContext context) {
+    if (Data.regionEast.teams.length == 0) {
+      return Text("");
+    }
     var picks = widget.regionTop.picks[widget.round - 1];
     var topList = picks.map((e) {
       return             GestureDetector(
@@ -369,6 +397,9 @@ class _TeamColumnState extends State<TeamColumn> {
 
   @override
   Widget build(BuildContext context) {
+    if (Data.regionEast.teams.length == 0) {
+      return Text("");
+    }
     List<Widget> topList = Data.pairings.map(
       (e) {
         return PairingItem(
