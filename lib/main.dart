@@ -466,7 +466,7 @@ class PairingItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: const EdgeInsets.all(3.0),
+        margin: const EdgeInsets.fromLTRB(0,3,0,3),
         child: Column(
           children: [
             GestureDetector(
@@ -515,8 +515,8 @@ class TeamBoxItem extends StatelessWidget {
           );
 
     return Container(
-        margin: const EdgeInsets.all(3.0),
-        padding: const EdgeInsets.all(3.0),
+        margin: const EdgeInsets.fromLTRB(0, 3, 0, 3),
+        padding: const EdgeInsets.all(3),
         decoration: BoxDecoration(border: Border.all(color: Colors.blueAccent)),
         child: Row(
           children: [
