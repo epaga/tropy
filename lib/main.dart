@@ -11,15 +11,20 @@ void main() async {
   runApp(MyApp());
 }
 
-Region region( String regionName, List<List<dynamic>> list ) {
-  return Region(name: regionName, picks: [
-  [null,null,null,null,null,null,null,null],
-  [null,null,null,null],
-  [null,null],
-  [null]
-  ], teams:
-  list.where((element) => element[2] == regionName).map((e) => 
-  Team(name: e[0],seed: e[1], region: e[2], imageName: e[3])).toList() );
+Region region(String regionName, List<List<dynamic>> list) {
+  return Region(
+      name: regionName,
+      picks: [
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null],
+        [null, null],
+        [null]
+      ],
+      teams: list
+          .where((element) => element[2] == regionName)
+          .map((e) =>
+              Team(name: e[0], seed: e[1], region: e[2], imageName: e[3]))
+          .toList());
 }
 
 class Team {
@@ -44,11 +49,14 @@ class Region {
   teamBySeed(s) {
     return teams.firstWhere((team) => team.seed == s);
   }
+
   firstRoundPick(s) {
-    int index = Data.pairings.indexWhere((element) => element.a == s || element.b == s);
+    int index =
+        Data.pairings.indexWhere((element) => element.a == s || element.b == s);
     removePicksOfTeamAfter(0, picks[0][index]);
     picks[0][index] = teamBySeed(s);
   }
+
   nullIfTeamIs(Team? teamToCheck, Team? teamToCompareWith) {
     if (teamToCheck?.name == teamToCompareWith?.name) {
       return null;
@@ -56,6 +64,7 @@ class Region {
       return teamToCheck;
     }
   }
+
   removePicksOfTeamAfter(round, Team? team) {
     if (team == null) {
       return;
@@ -63,7 +72,7 @@ class Region {
     Data.finalPicks.champ = nullIfTeamIs(Data.finalPicks.champ, team);
     Data.finalPicks.teamLeft = nullIfTeamIs(Data.finalPicks.teamLeft, team);
     Data.finalPicks.teamRight = nullIfTeamIs(Data.finalPicks.teamRight, team);
-    int i = round+1;
+    int i = round + 1;
     while (i < 4) {
       int index = picks[i].indexWhere((element) => element?.name == team.name);
       if (index >= 0) {
@@ -74,10 +83,10 @@ class Region {
       i++;
     }
   }
+
   pick(round, team) {
     if (round == 4) {
-      if (name == Data.regionWest.name ||
-          name == Data.regionEast.name) {
+      if (name == Data.regionWest.name || name == Data.regionEast.name) {
         removePicksOfTeamAfter(round, Data.finalPicks.teamLeft);
         Data.finalPicks.teamLeft = team;
       } else {
@@ -85,7 +94,7 @@ class Region {
         Data.finalPicks.teamRight = team;
       }
     } else {
-      int index = picks[round-1].indexWhere((element) => element == team);
+      int index = picks[round - 1].indexWhere((element) => element == team);
       removePicksOfTeamAfter(round, picks[round][index ~/ 2]);
       picks[round][index ~/ 2] = team!;
     }
@@ -122,6 +131,7 @@ class _MyAppState extends State<MyApp> {
     Data.regionSouth = region("South", list);
     setState(() {});
   }
+
   @override
   Widget build(BuildContext context) {
     if (Data.regionEast.teams.length == 0) {
@@ -150,45 +160,35 @@ class _MyAppState extends State<MyApp> {
                       child: TeamColumn(
                         regionTop: Data.regionWest,
                         regionBottom: Data.regionEast,
-                        refresh: () => {
-                          setState(() {})
-                        },
+                        refresh: () => {setState(() {})},
                       )),
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
                           regionTop: Data.regionWest,
                           regionBottom: Data.regionEast,
-                        refresh: () => {
-                          setState(() {})
-                        },
+                          refresh: () => {setState(() {})},
                           round: 1)),
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
                           regionTop: Data.regionWest,
                           regionBottom: Data.regionEast,
-                        refresh: () => {
-                          setState(() {})
-                        },
+                          refresh: () => {setState(() {})},
                           round: 2)),
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
                           regionTop: Data.regionWest,
                           regionBottom: Data.regionEast,
-                        refresh: () => {
-                          setState(() {})
-                        },
+                          refresh: () => {setState(() {})},
                           round: 3)),
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
                           regionTop: Data.regionWest,
                           regionBottom: Data.regionEast,
-                        refresh: () => {
-                          setState(() {})
-                        },
+                          refresh: () => {setState(() {})},
                           round: 4)),
                   SizedBox(
                       width: 250,
@@ -231,45 +231,35 @@ class _MyAppState extends State<MyApp> {
                       child: RoundColumn(
                           regionTop: Data.regionSouth,
                           regionBottom: Data.regionMidWest,
-                        refresh: () => {
-                          setState(() {})
-                        },
+                          refresh: () => {setState(() {})},
                           round: 4)),
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
                           regionTop: Data.regionSouth,
                           regionBottom: Data.regionMidWest,
-                        refresh: () => {
-                          setState(() {})
-                        },
+                          refresh: () => {setState(() {})},
                           round: 3)),
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
                           regionTop: Data.regionSouth,
                           regionBottom: Data.regionMidWest,
-                        refresh: () => {
-                          setState(() {})
-                        },
+                          refresh: () => {setState(() {})},
                           round: 2)),
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
                           regionTop: Data.regionSouth,
                           regionBottom: Data.regionMidWest,
-                        refresh: () => {
-                          setState(() {})
-                        },
+                          refresh: () => {setState(() {})},
                           round: 1)),
                   SizedBox(
                       width: 250,
                       child: TeamColumn(
                         regionTop: Data.regionSouth,
                         regionBottom: Data.regionMidWest,
-                        refresh: () => {
-                          setState(() {})
-                        },
+                        refresh: () => {setState(() {})},
                       )),
                 ],
               ),
@@ -308,29 +298,31 @@ class _RoundColumnState extends State<RoundColumn> {
     }
     var picks = widget.regionTop.picks[widget.round - 1];
     var topList = picks.map((e) {
-      return             GestureDetector(
-                          // When the child is tapped, show a snackbar.
-                          onTap: () {
-                            widget.regionTop.pick(widget.round, e);
-                            widget.refresh();
-                          },
-                          // The custom button
-                          child: TeamBoxItem(
-          teamName: e?.name ?? "", teamImageName: e?.imageName ?? "", seed: -1)
-          );
+      return GestureDetector(
+          // When the child is tapped, show a snackbar.
+          onTap: () {
+            widget.regionTop.pick(widget.round, e);
+            widget.refresh();
+          },
+          // The custom button
+          child: TeamBoxItem(
+              teamName: e?.name ?? "",
+              teamImageName: e?.imageName ?? "",
+              seed: -1));
     }).toList();
     var bottomPicks = widget.regionBottom.picks[widget.round - 1];
     var bottomList = bottomPicks.map((e) {
       return GestureDetector(
-                          // When the child is tapped, show a snackbar.
-                          onTap: () {
-                            widget.regionBottom.pick(widget.round, e);
-                            widget.refresh();
-                          },
-                          // The custom button
-                          child: TeamBoxItem(
-          teamName: e?.name ?? "", teamImageName: e?.imageName ?? "", seed: -1)
-          );
+          // When the child is tapped, show a snackbar.
+          onTap: () {
+            widget.regionBottom.pick(widget.round, e);
+            widget.refresh();
+          },
+          // The custom button
+          child: TeamBoxItem(
+              teamName: e?.name ?? "",
+              teamImageName: e?.imageName ?? "",
+              seed: -1));
     }).toList();
     final double spaceTop = widget.round == 1
         ? 20
@@ -381,8 +373,10 @@ class _RoundColumnState extends State<RoundColumn> {
 
 class TeamColumn extends StatefulWidget {
   const TeamColumn(
-      {required this.regionTop, required this.regionBottom,
-      required this.refresh, super.key});
+      {required this.regionTop,
+      required this.regionBottom,
+      required this.refresh,
+      super.key});
 
   final Region regionTop;
   final Region regionBottom;
@@ -403,37 +397,41 @@ class _TeamColumnState extends State<TeamColumn> {
     List<Widget> topList = Data.pairings.map(
       (e) {
         return PairingItem(
-            t1: widget.regionTop.teamBySeed(e.a),
-            t2: widget.regionTop.teamBySeed(e.b),
-            tapped:() => {
-              setState(() {
-                widget.regionTop.firstRoundPick(e.a);
-                widget.refresh();
-              })},
-            tapped2:() => {
-              setState(() {
-                widget.regionTop.firstRoundPick(e.b);
-                widget.refresh();
-              })},
-            );
+          t1: widget.regionTop.teamBySeed(e.a),
+          t2: widget.regionTop.teamBySeed(e.b),
+          tapped: () => {
+            setState(() {
+              widget.regionTop.firstRoundPick(e.a);
+              widget.refresh();
+            })
+          },
+          tapped2: () => {
+            setState(() {
+              widget.regionTop.firstRoundPick(e.b);
+              widget.refresh();
+            })
+          },
+        );
       },
     ).toList();
     List<Widget> bottomList = Data.pairings.map(
       (e) {
         return PairingItem(
-            t1: widget.regionBottom.teamBySeed(e.a),
-            t2: widget.regionBottom.teamBySeed(e.b),
-            tapped:() => {
-              setState(() {
-                widget.regionBottom.firstRoundPick(e.a);
-                widget.refresh();
-              })},
-            tapped2:() => {
-              setState(() {
-                widget.regionBottom.firstRoundPick(e.b);
-                widget.refresh();
-              })},
-            );
+          t1: widget.regionBottom.teamBySeed(e.a),
+          t2: widget.regionBottom.teamBySeed(e.b),
+          tapped: () => {
+            setState(() {
+              widget.regionBottom.firstRoundPick(e.a);
+              widget.refresh();
+            })
+          },
+          tapped2: () => {
+            setState(() {
+              widget.regionBottom.firstRoundPick(e.b);
+              widget.refresh();
+            })
+          },
+        );
       },
     ).toList();
     List<Widget> totalList = [];
@@ -455,8 +453,12 @@ class _TeamColumnState extends State<TeamColumn> {
 }
 
 class PairingItem extends StatelessWidget {
-  const PairingItem({required this.t1, required this.t2,
-  required this.tapped, required this.tapped2, super.key});
+  const PairingItem(
+      {required this.t1,
+      required this.t2,
+      required this.tapped,
+      required this.tapped2,
+      super.key});
 
   final Team t1;
   final Team t2;
@@ -466,25 +468,25 @@ class PairingItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: const EdgeInsets.fromLTRB(0,3,0,3),
-        child: Column(
-          children: [
-            GestureDetector(
-                          // When the child is tapped, show a snackbar.
-                          onTap: () {
-                            tapped();
-                          },
-                          // The custom button
-                          child: TeamBoxItem.fromTeam(t1)), 
-            GestureDetector(
-                          // When the child is tapped, show a snackbar.
-                          onTap: () {
-                            tapped2();
-                          },
-                          // The custom button
-                          child: TeamBoxItem.fromTeam(t2)),
-          ],
-        ),
+      margin: const EdgeInsets.fromLTRB(0, 3, 0, 3),
+      child: Column(
+        children: [
+          GestureDetector(
+              // When the child is tapped, show a snackbar.
+              onTap: () {
+                tapped();
+              },
+              // The custom button
+              child: TeamBoxItem.fromTeam(t1)),
+          GestureDetector(
+              // When the child is tapped, show a snackbar.
+              onTap: () {
+                tapped2();
+              },
+              // The custom button
+              child: TeamBoxItem.fromTeam(t2)),
+        ],
+      ),
     );
   }
 }
