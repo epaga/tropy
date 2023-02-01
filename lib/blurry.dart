@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'data.dart';
 import 'package:flutter/material.dart';
 
 class BlurryDialog extends StatefulWidget {
@@ -42,6 +43,7 @@ class _BlurryDialogState extends State<BlurryDialog> {
           child: Column(
             children: <Widget>[
               TextFormField(
+                onSaved: (newValue) => {Data.submission.name = newValue!},
                 autovalidateMode: AutovalidateMode.always,
                 validator: (value) =>
                     value == null || value.length < 5 ? 'Name required.' : null,
@@ -51,6 +53,7 @@ class _BlurryDialogState extends State<BlurryDialog> {
                 ),
               ),
               TextFormField(
+                onSaved: (newValue) => {Data.submission.cityState = newValue!},
                 autovalidateMode: AutovalidateMode.always,
                 validator: (value) =>
                     value == null || value.length < 3 ? 'City required.' : null,
@@ -60,6 +63,7 @@ class _BlurryDialogState extends State<BlurryDialog> {
                 ),
               ),
               TextFormField(
+                onSaved: (newValue) => {Data.submission.postal = newValue!},
                 autovalidateMode: AutovalidateMode.always,
                 validator: (value) => value == null || value.length < 5
                     ? 'Postal Code required.'
@@ -70,7 +74,7 @@ class _BlurryDialogState extends State<BlurryDialog> {
                 ),
               ),
               TextFormField(
-                autovalidateMode: AutovalidateMode.always,
+                onSaved: (newValue) => {Data.submission.country = newValue!},
                 validator: (value) => value == null || value.length < 5
                     ? 'Country required.'
                     : null,
@@ -80,6 +84,7 @@ class _BlurryDialogState extends State<BlurryDialog> {
                 ),
               ),
               TextFormField(
+                onSaved: (newValue) => {Data.submission.email = newValue!},
                 autovalidateMode: AutovalidateMode.always,
                 validator: (value) => value == null || value.length < 5
                     ? 'Email required.'
@@ -117,6 +122,7 @@ class _BlurryDialogState extends State<BlurryDialog> {
                     child: Text("Submit"),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
                         continueCallBack();
                       }
                     },

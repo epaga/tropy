@@ -1,3 +1,5 @@
+import 'package:flutter/src/widgets/form.dart';
+
 import 'main.dart';
 
 class Data {
@@ -29,5 +31,89 @@ class Data {
         finalPicks.champ != null &&
         finalPicks.teamLeft != null &&
         finalPicks.teamRight != null;
+  }
+
+  static Submission submission = Submission();
+
+  static String picks() {
+    var westR1Picks = regionWest.picksString(0);
+    var eastR1Picks = regionEast.picksString(0);
+    var southR1Picks = regionSouth.picksString(0);
+    var midwestR1Picks = regionMidWest.picksString(0);
+    var westR2Picks = regionWest.picksString(1);
+    var eastR2Picks = regionEast.picksString(1);
+    var southR2Picks = regionSouth.picksString(1);
+    var midwestR2Picks = regionMidWest.picksString(1);
+    var westR3Picks = regionWest.picksString(2);
+    var eastR3Picks = regionEast.picksString(2);
+    var southR3Picks = regionSouth.picksString(2);
+    var midwestR3Picks = regionMidWest.picksString(2);
+    var westR4Picks = regionWest.picksString(3);
+    var eastR4Picks = regionEast.picksString(3);
+    var southR4Picks = regionSouth.picksString(3);
+    var midwestR4Picks = regionMidWest.picksString(3);
+    var leftPick = finalPicks.teamLeft!;
+    var leftPickString =
+        leftPick.region.substring(0, 1) + leftPick.seed.toString();
+    var rightPick = finalPicks.teamRight!;
+    var rightPickString =
+        rightPick.region.substring(0, 1) + rightPick.seed.toString();
+    var champPick = finalPicks.champ!;
+    var champPickString =
+        champPick.region.substring(0, 1) + champPick.seed.toString();
+    return westR1Picks +
+        "," +
+        eastR1Picks +
+        "," +
+        southR1Picks +
+        "," +
+        midwestR1Picks +
+        "," +
+        westR2Picks +
+        "," +
+        eastR2Picks +
+        "," +
+        southR2Picks +
+        "," +
+        midwestR2Picks +
+        "," +
+        westR3Picks +
+        "," +
+        eastR3Picks +
+        "," +
+        southR3Picks +
+        "," +
+        midwestR3Picks +
+        "," +
+        westR4Picks +
+        "," +
+        eastR4Picks +
+        "," +
+        southR4Picks +
+        "," +
+        midwestR4Picks +
+        "," +
+        leftPickString +
+        "," +
+        rightPickString +
+        "," +
+        champPickString;
+  }
+}
+
+class Submission {
+  var name = "";
+  var cityState = "";
+  var postal = "";
+  var country = "";
+  var email = "";
+  var picks = "";
+
+  String firstName() {
+    return name.substring(0, name.lastIndexOf(' ') + 1);
+  }
+
+  String lastName() {
+    return name.substring(name.lastIndexOf(' ') + 1);
   }
 }

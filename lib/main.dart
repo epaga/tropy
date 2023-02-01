@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:http/http.dart' as http;
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -107,6 +108,12 @@ class Region {
     var result =
         picks.every((element) => element.every((pick) => pick != null));
     return result;
+  }
+
+  picksString(int round) {
+    return picks[round]
+        .map((e) => e!.region.substring(0, 1) + e!.seed.toString())
+        .join(",");
   }
 }
 
@@ -370,7 +377,41 @@ class _MyAppState extends State<MyApp> {
   _voidCallback(BuildContext context, bool ready) {
     Navigator.of(context).pop();
     if (ready) {
-      print("continue pressed...");
+      /*
+      entry.1605530316 // first name
+      entry.1938482540 // last name
+      entry.580760508 // city/state
+      entry.1605013589 // postal
+      entry.470103823 // country
+      entry.2137142274 // email
+      entry.795823503 // picks
+      */
+      var postData = "entry.1605530316=" +
+          Uri.encodeFull(Data.submission.firstName()) +
+          "&entry.1938482540=" +
+          Uri.encodeFull(Data.submission.lastName()) +
+          "&entry.580760508=" +
+          Uri.encodeFull(Data.submission.cityState) +
+          "&entry.1605013589=" +
+          Uri.encodeFull(Data.submission.postal) +
+          "&entry.470103823=" +
+          Uri.encodeFull(Data.submission.country) +
+          "&entry.2137142274=" +
+          Uri.encodeFull(Data.submission.email) +
+          "&entry.795823503=" +
+          Uri.encodeFull(Data.picks());
+      Future<http.Response> createAlbum(String title) {
+        return http.post(
+          Uri.parse(
+              'https://docs.google.com/forms/u/0/d/e/1FAIpQLSeHIv1kfLZa0mhsEFiPfp6M4hDUn-bVGFwqKgRncTG5IH7Dcg/formResponse'),
+          headers: <String, String>{
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+          },
+          body: postData,
+        );
+      }
+
+      createAlbum("title");
     }
   }
 
