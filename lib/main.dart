@@ -771,6 +771,10 @@ class TeamBoxItem extends StatelessWidget {
         ? SizedBox(width: 30, height: 30)
         : Image(
             image: AssetImage('assets/${teamImageName}'),
+            errorBuilder: (BuildContext context, Object exception,
+                StackTrace? stackTrace) {
+              return SizedBox(width: 30, height: 30);
+            },
             width: 30,
             height: 30,
           );
