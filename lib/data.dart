@@ -12,6 +12,8 @@ class Data {
     Pair(2, 15)
   ];
 
+  static bool haveAllPicks = false;
+
   static Region regionWest = Region(teams: [], name: "", picks: []);
   static Region regionEast = Region(teams: [], name: "", picks: []);
   static Region regionSouth = Region(teams: [], name: "", picks: []);

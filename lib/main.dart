@@ -6,9 +6,10 @@ import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'data.dart';
+import 'blurry.dart';
 
 void main() async {
-  runApp(MyApp());
+  runApp(const MaterialApp(home: MyApp()));
 }
 
 Region region(String regionName, List<List<dynamic>> list) {
@@ -137,208 +138,245 @@ class _MyAppState extends State<MyApp> {
     if (Data.regionEast.teams.length == 0) {
       loadInitialData();
     }
-    return MaterialApp(
-      title: 'Traveling Tropy',
-      home: Scaffold(
-        body: InteractiveViewer(
-          constrained: false,
-          boundaryMargin: const EdgeInsets.all(20.0),
-          minScale: 0.01,
-          maxScale: 1,
-          child: SizedBox(
-            width: 3768,
-            height: 1600,
-            child: Container(
-              margin: const EdgeInsets.all(15.0),
-              padding: const EdgeInsets.all(3.0),
-              decoration:
-                  BoxDecoration(border: Border.all(color: Colors.black)),
-              child: Row(
-                children: [
-                  SizedBox(
-                      width: 250,
-                      child: TeamColumn(
+    return Scaffold(
+      body: InteractiveViewer(
+        constrained: false,
+        boundaryMargin: const EdgeInsets.all(20.0),
+        minScale: 0.01,
+        maxScale: 1,
+        child: SizedBox(
+          width: 3768,
+          height: 1600,
+          child: Container(
+            margin: const EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(3.0),
+            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+            child: Row(
+              children: [
+                SizedBox(
+                    width: 250,
+                    child: TeamColumn(
+                      regionTop: Data.regionWest,
+                      regionBottom: Data.regionEast,
+                      refresh: () => {setState(() {})},
+                    )),
+                SizedBox(
+                  width: 40,
+                  child: CustomPaint(
+                    size: Size(40, 1600),
+                    painter: TwoToOnePainter(1),
+                  ),
+                ),
+                SizedBox(
+                    width: 250,
+                    child: RoundColumn(
                         regionTop: Data.regionWest,
                         regionBottom: Data.regionEast,
                         refresh: () => {setState(() {})},
-                    )),
-                  SizedBox(width:40,
-                      child: CustomPaint(
-                        size: Size(40,1600),
-                        painter: TwoToOnePainter(1),
-                      ),
-                    ),
-                  SizedBox(
-                      width: 250,
-                      child: RoundColumn(
-                          regionTop: Data.regionWest,
-                          regionBottom: Data.regionEast,
-                          refresh: () => {setState(() {})},
-                          round: 1)),
-                  SizedBox(width:40,
-                      child: CustomPaint(
-                        size: Size(40,1600),
-                        painter: TwoToOnePainter(2),
-                      ),
-                    ),
-                  SizedBox(
-                      width: 250,
-                      child: RoundColumn(
-                          regionTop: Data.regionWest,
-                          regionBottom: Data.regionEast,
-                          refresh: () => {setState(() {})},
-                          round: 2)),
-                  SizedBox(width:40,
-                      child: CustomPaint(
-                        size: Size(40,1600),
-                        painter: TwoToOnePainter(3),
-                      ),
-                    ),
-                  SizedBox(
-                      width: 250,
-                      child: RoundColumn(
-                          regionTop: Data.regionWest,
-                          regionBottom: Data.regionEast,
-                          refresh: () => {setState(() {})},
-                          round: 3)),
-                  SizedBox(width:40,
-                      child: CustomPaint(
-                        size: Size(40,1600),
-                        painter: TwoToOnePainter(4),
-                      ),
-                    ),
-                  SizedBox(
-                      width: 250,
-                      child: RoundColumn(
-                          regionTop: Data.regionWest,
-                          regionBottom: Data.regionEast,
-                          refresh: () => {setState(() {})},
-                          round: 4)),
-                  SizedBox(width:40,
-                      child: CustomPaint(
-                        size: Size(40,1600),
-                        painter: TwoToOnePainter(5),
-                      ),
-                    ),
-                  SizedBox(
-                      width: 250,
-                      child: GestureDetector(
-                          // When the child is tapped, show a snackbar.
-                          onTap: () {
-                            setState(() {
-                              Data.finalPicks.champ = Data.finalPicks.teamLeft;
-                            });
-                          },
-                          // The custom button
-                          child: TeamBoxItem(
-                              teamName: Data.finalPicks.teamLeft?.name ?? "",
-                              teamImageName:
-                                  Data.finalPicks.teamLeft?.imageName ?? "",
-                              seed: Data.finalPicks.teamLeft?.seed ?? -1))),
-                  SizedBox(width:40,
-                      child: CustomPaint(
-                        size: Size(40,1600),
-                        painter: TwoToOnePainter(6, backwards: false),
-                      ),
-                    ),
-                  SizedBox(
-                      width: 250,
-                      child: TeamBoxItem(
-                          teamName: Data.finalPicks.champ?.name ?? "",
-                          teamImageName: Data.finalPicks.champ?.imageName ?? "",
-                          seed: Data.finalPicks.champ?.seed ?? -1)),
-                  SizedBox(width:40,
-                      child: CustomPaint(
-                        size: Size(40,1600),
-                        painter: TwoToOnePainter(6, backwards: true),
-                      ),
-                    ),
-                  SizedBox(
-                      width: 250,
-                      child: GestureDetector(
-                          // When the child is tapped, show a snackbar.
-                          onTap: () {
-                            setState(() {
-                              Data.finalPicks.champ = Data.finalPicks.teamRight;
-                            });
-                          },
-                          // The custom button
-                          child: TeamBoxItem(
-                              teamName: Data.finalPicks.teamRight?.name ?? "",
-                              teamImageName:
-                                  Data.finalPicks.teamRight?.imageName ?? "",
-                              seed: Data.finalPicks.teamRight?.seed ?? -1))),
-                  SizedBox(width:40,
-                      child: CustomPaint(
-                        size: Size(40,1600),
-                        painter: TwoToOnePainter(5, backwards: true),
-                      ),
-                    ),
-                  SizedBox(
-                      width: 250,
-                      child: RoundColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionMidWest,
-                          refresh: () => {setState(() {})},
-                          round: 4)),
-                  SizedBox(width:40,
-                      child: CustomPaint(
-                        size: Size(40,1600),
-                        painter: TwoToOnePainter(4, backwards: true),
-                      ),
-                    ),
-                  SizedBox(
-                      width: 250,
-                      child: RoundColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionMidWest,
-                          refresh: () => {setState(() {})},
-                          round: 3)),
-                  SizedBox(width:40,
-                      child: CustomPaint(
-                        size: Size(40,1600),
-                        painter: TwoToOnePainter(3, backwards: true),
-                      ),
-                    ),
-                  SizedBox(
-                      width: 250,
-                      child: RoundColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionMidWest,
-                          refresh: () => {setState(() {})},
-                          round: 2)),
-                  SizedBox(width:40,
-                      child: CustomPaint(
-                        size: Size(40,1600),
-                        painter: TwoToOnePainter(2, backwards: true),
-                      ),
-                    ),
-                  SizedBox(
-                      width: 250,
-                      child: RoundColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionMidWest,
-                          refresh: () => {setState(() {})},
-                          round: 1)),
-                  SizedBox(width:40,
-                      child: CustomPaint(
-                        size: Size(40,1600),
-                        painter: TwoToOnePainter(1, backwards: true),
-                      ),
-                    ),
-                  SizedBox(
-                      width: 250,
-                      child: TeamColumn(
+                        round: 1)),
+                SizedBox(
+                  width: 40,
+                  child: CustomPaint(
+                    size: Size(40, 1600),
+                    painter: TwoToOnePainter(2),
+                  ),
+                ),
+                SizedBox(
+                    width: 250,
+                    child: RoundColumn(
+                        regionTop: Data.regionWest,
+                        regionBottom: Data.regionEast,
+                        refresh: () => {setState(() {})},
+                        round: 2)),
+                SizedBox(
+                  width: 40,
+                  child: CustomPaint(
+                    size: Size(40, 1600),
+                    painter: TwoToOnePainter(3),
+                  ),
+                ),
+                SizedBox(
+                    width: 250,
+                    child: RoundColumn(
+                        regionTop: Data.regionWest,
+                        regionBottom: Data.regionEast,
+                        refresh: () => {setState(() {})},
+                        round: 3)),
+                SizedBox(
+                  width: 40,
+                  child: CustomPaint(
+                    size: Size(40, 1600),
+                    painter: TwoToOnePainter(4),
+                  ),
+                ),
+                SizedBox(
+                    width: 250,
+                    child: RoundColumn(
+                        regionTop: Data.regionWest,
+                        regionBottom: Data.regionEast,
+                        refresh: () => {setState(() {})},
+                        round: 4)),
+                SizedBox(
+                  width: 40,
+                  child: CustomPaint(
+                    size: Size(40, 1600),
+                    painter: TwoToOnePainter(5),
+                  ),
+                ),
+                SizedBox(
+                    width: 250,
+                    child: GestureDetector(
+                        // When the child is tapped, show a snackbar.
+                        onTap: () {
+                          setState(() {
+                            Data.finalPicks.champ = Data.finalPicks.teamLeft;
+                          });
+                        },
+                        // The custom button
+                        child: TeamBoxItem(
+                            teamName: Data.finalPicks.teamLeft?.name ?? "",
+                            teamImageName:
+                                Data.finalPicks.teamLeft?.imageName ?? "",
+                            seed: Data.finalPicks.teamLeft?.seed ?? -1))),
+                SizedBox(
+                  width: 40,
+                  child: CustomPaint(
+                    size: Size(40, 1600),
+                    painter: TwoToOnePainter(6, backwards: false),
+                  ),
+                ),
+                SizedBox(
+                    width: 250,
+                    child: TeamBoxItem(
+                        teamName: Data.finalPicks.champ?.name ?? "",
+                        teamImageName: Data.finalPicks.champ?.imageName ?? "",
+                        seed: Data.finalPicks.champ?.seed ?? -1)),
+                SizedBox(
+                  width: 40,
+                  child: CustomPaint(
+                    size: Size(40, 1600),
+                    painter: TwoToOnePainter(6, backwards: true),
+                  ),
+                ),
+                SizedBox(
+                    width: 250,
+                    child: GestureDetector(
+                        // When the child is tapped, show a snackbar.
+                        onTap: () {
+                          setState(() {
+                            Data.finalPicks.champ = Data.finalPicks.teamRight;
+                          });
+                        },
+                        // The custom button
+                        child: TeamBoxItem(
+                            teamName: Data.finalPicks.teamRight?.name ?? "",
+                            teamImageName:
+                                Data.finalPicks.teamRight?.imageName ?? "",
+                            seed: Data.finalPicks.teamRight?.seed ?? -1))),
+                SizedBox(
+                  width: 40,
+                  child: CustomPaint(
+                    size: Size(40, 1600),
+                    painter: TwoToOnePainter(5, backwards: true),
+                  ),
+                ),
+                SizedBox(
+                    width: 250,
+                    child: RoundColumn(
                         regionTop: Data.regionSouth,
                         regionBottom: Data.regionMidWest,
                         refresh: () => {setState(() {})},
-                      )),
-                ],
-              ),
+                        round: 4)),
+                SizedBox(
+                  width: 40,
+                  child: CustomPaint(
+                    size: Size(40, 1600),
+                    painter: TwoToOnePainter(4, backwards: true),
+                  ),
+                ),
+                SizedBox(
+                    width: 250,
+                    child: RoundColumn(
+                        regionTop: Data.regionSouth,
+                        regionBottom: Data.regionMidWest,
+                        refresh: () => {setState(() {})},
+                        round: 3)),
+                SizedBox(
+                  width: 40,
+                  child: CustomPaint(
+                    size: Size(40, 1600),
+                    painter: TwoToOnePainter(3, backwards: true),
+                  ),
+                ),
+                SizedBox(
+                    width: 250,
+                    child: RoundColumn(
+                        regionTop: Data.regionSouth,
+                        regionBottom: Data.regionMidWest,
+                        refresh: () => {setState(() {})},
+                        round: 2)),
+                SizedBox(
+                  width: 40,
+                  child: CustomPaint(
+                    size: Size(40, 1600),
+                    painter: TwoToOnePainter(2, backwards: true),
+                  ),
+                ),
+                SizedBox(
+                    width: 250,
+                    child: RoundColumn(
+                        regionTop: Data.regionSouth,
+                        regionBottom: Data.regionMidWest,
+                        refresh: () => {setState(() {})},
+                        round: 1)),
+                SizedBox(
+                  width: 40,
+                  child: CustomPaint(
+                    size: Size(40, 1600),
+                    painter: TwoToOnePainter(1, backwards: true),
+                  ),
+                ),
+                SizedBox(
+                    width: 250,
+                    child: TeamColumn(
+                      regionTop: Data.regionSouth,
+                      regionBottom: Data.regionMidWest,
+                      refresh: () => {setState(() {})},
+                    )),
+              ],
             ),
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _showDialog(context);
+        },
+        backgroundColor: Data.haveAllPicks ? Colors.blue : Colors.grey,
+        child: const Text("Submit"),
+      ),
+    );
+  }
+
+  _showDialog(BuildContext context) {
+    VoidCallback continueCallBack = () => {
+          Navigator.of(context).pop(),
+          // code on continue comes here
+        };
+    bool ready = Data.haveAllPicks;
+    BlurryDialog alert = BlurryDialog(
+        ready ? "Ready?" : "Can't submit yet",
+        ready
+            ? "Are you all ready to make your picks?"
+            : "You can't submit until you've made all your picks!",
+        continueCallBack,
+        !ready);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }
@@ -353,79 +391,79 @@ class TwoToOnePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // Create a Paint object.
     Paint _paint = Paint()
-    ..color = Colors.black
-    ..strokeWidth = 1.0
-    ..style = PaintingStyle.stroke
-    ..strokeJoin = StrokeJoin.round;
+      ..color = Colors.black
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke
+      ..strokeJoin = StrokeJoin.round;
 
     // Set the color of the paint to blue.
     _paint.color = Colors.blue;
 
     // super embarrassingly duplicated code since i'm running out of time...
     if (round == 1) {
-    drawTwoToOne(canvas, _paint, 0,0,40, backwards);
-    drawTwoToOne(canvas, _paint, 0,94,40, backwards);
-    drawTwoToOne(canvas, _paint, 0,94*2,40, backwards);
-    drawTwoToOne(canvas, _paint, 0,94*3,40, backwards);
-    drawTwoToOne(canvas, _paint, 0,94*4,40, backwards);
-    drawTwoToOne(canvas, _paint, 0,94*5,40, backwards);
-    drawTwoToOne(canvas, _paint, 0,94*6,40, backwards);
-    drawTwoToOne(canvas, _paint, 0,94*7,40, backwards);
-    drawTwoToOne(canvas, _paint, 0,94*8+26,40, backwards);
-    drawTwoToOne(canvas, _paint, 0,94*9+26,40, backwards);
-    drawTwoToOne(canvas, _paint, 0,94*10+26,40, backwards);
-    drawTwoToOne(canvas, _paint, 0,94*11+26,40, backwards);
-    drawTwoToOne(canvas, _paint, 0,94*12+26,40, backwards);
-    drawTwoToOne(canvas, _paint, 0,94*13+26,40, backwards);
-    drawTwoToOne(canvas, _paint, 0,94*14+26,40, backwards);
-    drawTwoToOne(canvas, _paint, 0,94*15+26,40, backwards);
+      drawTwoToOne(canvas, _paint, 0, 0, 40, backwards);
+      drawTwoToOne(canvas, _paint, 0, 94, 40, backwards);
+      drawTwoToOne(canvas, _paint, 0, 94 * 2, 40, backwards);
+      drawTwoToOne(canvas, _paint, 0, 94 * 3, 40, backwards);
+      drawTwoToOne(canvas, _paint, 0, 94 * 4, 40, backwards);
+      drawTwoToOne(canvas, _paint, 0, 94 * 5, 40, backwards);
+      drawTwoToOne(canvas, _paint, 0, 94 * 6, 40, backwards);
+      drawTwoToOne(canvas, _paint, 0, 94 * 7, 40, backwards);
+      drawTwoToOne(canvas, _paint, 0, 94 * 8 + 26, 40, backwards);
+      drawTwoToOne(canvas, _paint, 0, 94 * 9 + 26, 40, backwards);
+      drawTwoToOne(canvas, _paint, 0, 94 * 10 + 26, 40, backwards);
+      drawTwoToOne(canvas, _paint, 0, 94 * 11 + 26, 40, backwards);
+      drawTwoToOne(canvas, _paint, 0, 94 * 12 + 26, 40, backwards);
+      drawTwoToOne(canvas, _paint, 0, 94 * 13 + 26, 40, backwards);
+      drawTwoToOne(canvas, _paint, 0, 94 * 14 + 26, 40, backwards);
+      drawTwoToOne(canvas, _paint, 0, 94 * 15 + 26, 40, backwards);
     } else if (round == 2) {
-    drawTwoToOne(canvas, _paint, 0,18,94, backwards);
-    drawTwoToOne(canvas, _paint, 0,18+94*2,94, backwards);
-    drawTwoToOne(canvas, _paint, 0,18+94*4,94, backwards);
-    drawTwoToOne(canvas, _paint, 0,18+94*6,94, backwards);
-    drawTwoToOne(canvas, _paint, 0,18+94*8+26,94, backwards);
-    drawTwoToOne(canvas, _paint, 0,18+94*10+26,94, backwards);
-    drawTwoToOne(canvas, _paint, 0,18+94*12+26,94, backwards);
-    drawTwoToOne(canvas, _paint, 0,18+94*14+26,94, backwards);
+      drawTwoToOne(canvas, _paint, 0, 18, 94, backwards);
+      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 2, 94, backwards);
+      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 4, 94, backwards);
+      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 6, 94, backwards);
+      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 8 + 26, 94, backwards);
+      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 10 + 26, 94, backwards);
+      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 12 + 26, 94, backwards);
+      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 14 + 26, 94, backwards);
     } else if (round == 3) {
-    drawTwoToOne(canvas, _paint, 0,65,188, backwards);
-    drawTwoToOne(canvas, _paint, 0,65+94*4,188, backwards);
-    drawTwoToOne(canvas, _paint, 0,65+94*8+26,188, backwards);
-    drawTwoToOne(canvas, _paint, 0,65+94*12+26,188, backwards);
+      drawTwoToOne(canvas, _paint, 0, 65, 188, backwards);
+      drawTwoToOne(canvas, _paint, 0, 65 + 94 * 4, 188, backwards);
+      drawTwoToOne(canvas, _paint, 0, 65 + 94 * 8 + 26, 188, backwards);
+      drawTwoToOne(canvas, _paint, 0, 65 + 94 * 12 + 26, 188, backwards);
     } else if (round == 4) {
-    drawTwoToOne(canvas, _paint, 0,160,188*2, backwards);
-    drawTwoToOne(canvas, _paint, 0,160+94*8+26,188*2, backwards);
+      drawTwoToOne(canvas, _paint, 0, 160, 188 * 2, backwards);
+      drawTwoToOne(canvas, _paint, 0, 160 + 94 * 8 + 26, 188 * 2, backwards);
     } else if (round == 5) {
-    drawTwoToOne(canvas, _paint, 0,345,188*4+26, backwards);
+      drawTwoToOne(canvas, _paint, 0, 345, 188 * 4 + 26, backwards);
     } else if (round == 6) {
-    var path = Path();
-    path.moveTo(0,188*4+26);
-    path.lineTo(40,188*4+26);
-    canvas.drawPath(path, _paint);
+      var path = Path();
+      path.moveTo(0, 188 * 4 + 26);
+      path.lineTo(40, 188 * 4 + 26);
+      canvas.drawPath(path, _paint);
     }
   }
 
-  void drawTwoToOne(Canvas canvas, Paint paint, double x, double y, double height,
-  bool backwards) {
+  void drawTwoToOne(Canvas canvas, Paint paint, double x, double y,
+      double height, bool backwards) {
     if (backwards) {
-    var path = Path();
-    path.moveTo(x+40, y+50);
-    path.lineTo(x+40-25, y+50);
-    path.lineTo(x+40-25, y+50+height);
-    path.lineTo(x+40, y+50+height);
-    path.moveTo(x+40-25, y+50+height/2);
-    path.lineTo(x, y+50+height/2);
-    canvas.drawPath(path, paint);
+      var path = Path();
+      path.moveTo(x + 40, y + 50);
+      path.lineTo(x + 40 - 25, y + 50);
+      path.lineTo(x + 40 - 25, y + 50 + height);
+      path.lineTo(x + 40, y + 50 + height);
+      path.moveTo(x + 40 - 25, y + 50 + height / 2);
+      path.lineTo(x, y + 50 + height / 2);
+      canvas.drawPath(path, paint);
     } else {
-    var path = Path();
-    path.moveTo(x, y+50);
-    path.lineTo(x+25, y+50);
-    path.lineTo(x+25, y+50+height);
-    path.lineTo(x, y+50+height);
-    path.moveTo(x+25, y+50+height/2);
-    path.lineTo(x+40, y+50+height/2);
-    canvas.drawPath(path, paint);
+      var path = Path();
+      path.moveTo(x, y + 50);
+      path.lineTo(x + 25, y + 50);
+      path.lineTo(x + 25, y + 50 + height);
+      path.lineTo(x, y + 50 + height);
+      path.moveTo(x + 25, y + 50 + height / 2);
+      path.lineTo(x + 40, y + 50 + height / 2);
+      canvas.drawPath(path, paint);
     }
   }
 
