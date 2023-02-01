@@ -139,7 +139,11 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   loadInitialData() async {
-    var initialdatacsv = await rootBundle.loadString('assets/initialdata.csv');
+    final response = await http
+        .get(Uri.parse('https://smoothtrack.app/tropy/initialdata.csv'));
+
+    var initialdatacsv =
+        response.body; //rootBundle.loadString('assets/initialdata.csv');
     var list = CsvToListConverter(eol: "\n").convert(initialdatacsv);
     Data.regionWest = region("West", list);
     Data.regionEast = region("East", list);
