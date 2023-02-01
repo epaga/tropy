@@ -106,8 +106,6 @@ class Region {
   bool haveAllPicks() {
     var result =
         picks.every((element) => element.every((pick) => pick != null));
-    print(name);
-    print(result);
     return result;
   }
 }
@@ -369,19 +367,26 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  _voidCallback(BuildContext context, bool ready) {
+    Navigator.of(context).pop();
+    if (ready) {
+      print("continue pressed...");
+    }
+  }
+
   _showDialog(BuildContext context) {
-    VoidCallback continueCallBack = () => {
-          Navigator.of(context).pop(),
-          // code on continue comes here
-        };
     bool ready = Data.haveAllPicks;
+    VoidCallback continueCallBack = () => {
+          _voidCallback(context, ready),
+        };
     BlurryDialog alert = BlurryDialog(
-        ready ? "Ready?" : "Can't submit yet",
+        ready ? "Ready to submit?" : "Can't submit yet",
         ready
             ? "Are you all ready to make your picks?"
             : "You can't submit until you've made all your picks!",
         continueCallBack,
-        !ready);
+        !ready,
+        true);
 
     showDialog(
       context: context,

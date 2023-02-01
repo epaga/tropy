@@ -22,9 +22,6 @@ class Data {
   static FinalPicks finalPicks = FinalPicks();
 
   static void updateWhetherWeHaveAllPicks() {
-    print(finalPicks.champ != null);
-    print(finalPicks.teamLeft != null);
-    print(finalPicks.teamRight != null);
     haveAllPicks = regionWest.haveAllPicks() &&
         regionEast.haveAllPicks() &&
         regionSouth.haveAllPicks() &&
