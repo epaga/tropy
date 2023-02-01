@@ -403,7 +403,7 @@ class _MyAppState extends State<MyApp> {
       Future<http.Response> createAlbum(String title) {
         return http.post(
           Uri.parse(
-              'https://docs.google.com/forms/u/0/d/e/1FAIpQLSeHIv1kfLZa0mhsEFiPfp6M4hDUn-bVGFwqKgRncTG5IH7Dcg/formResponse'),
+              'https://docs.google.com/forms/u/0/d/e/googleformid/formResponse'),
           headers: <String, String>{
             'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
           },
