@@ -104,7 +104,11 @@ class Region {
   }
 
   bool haveAllPicks() {
-    return picks.every((element) => element.every((pick) => pick != null));
+    var result =
+        picks.every((element) => element.every((pick) => pick != null));
+    print(name);
+    print(result);
+    return result;
   }
 }
 
@@ -236,6 +240,7 @@ class _MyAppState extends State<MyApp> {
                         onTap: () {
                           setState(() {
                             Data.finalPicks.champ = Data.finalPicks.teamLeft;
+                            Data.updateWhetherWeHaveAllPicks();
                           });
                         },
                         // The custom button
