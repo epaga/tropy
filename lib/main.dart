@@ -56,6 +56,7 @@ class Region {
         Data.pairings.indexWhere((element) => element.a == s || element.b == s);
     removePicksOfTeamAfter(0, picks[0][index]);
     picks[0][index] = teamBySeed(s);
+    Data.updateWhetherWeHaveAllPicks();
   }
 
   nullIfTeamIs(Team? teamToCheck, Team? teamToCompareWith) {
@@ -99,6 +100,11 @@ class Region {
       removePicksOfTeamAfter(round, picks[round][index ~/ 2]);
       picks[round][index ~/ 2] = team!;
     }
+    Data.updateWhetherWeHaveAllPicks();
+  }
+
+  bool haveAllPicks() {
+    return picks.every((element) => element.every((pick) => pick != null));
   }
 }
 

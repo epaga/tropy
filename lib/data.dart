@@ -20,4 +20,14 @@ class Data {
   static Region regionMidWest = Region(teams: [], name: "", picks: []);
 
   static FinalPicks finalPicks = FinalPicks();
+
+  static void updateWhetherWeHaveAllPicks() {
+    haveAllPicks = regionWest.haveAllPicks() &&
+        regionEast.haveAllPicks() &&
+        regionSouth.haveAllPicks() &&
+        regionMidWest.haveAllPicks() &&
+        finalPicks.champ != null &&
+        finalPicks.teamLeft != null &&
+        finalPicks.teamRight != null;
+  }
 }
