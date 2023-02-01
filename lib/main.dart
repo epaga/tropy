@@ -142,6 +142,14 @@ class _MyAppState extends State<MyApp> {
     final response = await http
         .get(Uri.parse('https://smoothtrack.app/tropy/initialdata.csv'));
 
+    // - CHANGE TO FUTURE BUILDER https://docs.flutter.dev/cookbook/networking/fetch-data
+    // - DISPLAY "NOT READY YET" SCREEN IF SELECTION SUNDAY NOT DONE YET
+    // - PERSIST PICKS
+    // - MAKE PICKS READ-ONLY AFTER SUBMITTING
+    // - HAVE ENTRY PASSWORD SCREEN IN FRONT FIRST
+    // - DOWNLOAD TEAM IMAGES FROM SITE AS WELL
+    // - HAVE PRIVACY POLICY FOR DSGVO
+
     var initialdatacsv =
         response.body; //rootBundle.loadString('assets/initialdata.csv');
     var list = CsvToListConverter(eol: "\n").convert(initialdatacsv);
