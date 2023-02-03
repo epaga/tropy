@@ -18,7 +18,7 @@ class Data {
   ];
 
   static bool haveAllPicks = false;
-  static bool submittedPicks = false;
+  static bool submittedPicks = true;
 
   static Region regionWest = Region(teams: [], name: "", picks: []);
   static Region regionEast = Region(teams: [], name: "", picks: []);
@@ -26,8 +26,11 @@ class Data {
   static Region regionMidWest = Region(teams: [], name: "", picks: []);
   static bool notReadyYet = true;
   static String csvUrl = 'https://smoothtrack.app/tropy/initialdata2.csv';
+  static bool needPassword = false;
 
   static FinalPicks finalPicks = FinalPicks();
+
+  static bool clearPrefsAtStart = true;
 
   static void storeToDisk() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

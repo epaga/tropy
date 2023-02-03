@@ -15,7 +15,10 @@ import 'blurry.dart';
 part 'main.g.dart';
 
 void main() async {
-  runApp(const MaterialApp(home: MyApp()));
+  runApp(const MaterialApp(
+    home: MyApp(),
+    debugShowCheckedModeBanner: false,
+  ));
 }
 
 Region region(String regionName, List<List<dynamic>> list) {
@@ -170,29 +173,57 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  setPasswordSet() async {
+    Data.needPassword = false;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool("stillNeedPassword", false);
+    loadInitialData();
+  }
+
   loadInitialData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var regionWestJson = prefs.getString('regionWest');
-    if (regionWestJson != null) {
-      Data.regionWest =
-          Region.fromJson(jsonDecode(prefs.getString('regionWest')!));
-      Data.regionEast =
-          Region.fromJson(jsonDecode(prefs.getString('regionEast')!));
-      Data.regionMidWest =
-          Region.fromJson(jsonDecode(prefs.getString('regionMidwest')!));
-      Data.regionSouth =
-          Region.fromJson(jsonDecode(prefs.getString('regionSouth')!));
-      Data.finalPicks =
-          FinalPicks.fromJson(jsonDecode(prefs.getString('finalPicks')!));
-      Data.notReadyYet = false;
+    if (Data.clearPrefsAtStart) {
+      await prefs.clear();
+      Data.clearPrefsAtStart = false;
+    }
+    Data.submittedPicks = prefs.getBool("submittedPicks") ?? false;
+    if (Data.submittedPicks) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        duration: Duration(seconds: 5),
+        content: Text("You already submitted your entry! Good luck!"),
+      ));
+    }
+
+    if (prefs.getBool("stillNeedPassword") ?? true) {
+      Data.notReadyYet = true;
+      Data.needPassword = true;
       setState(() {});
       return;
+    } else {
+      Data.needPassword = false;
+      var regionWestJson = prefs.getString('regionWest');
+      if (regionWestJson != null) {
+        Data.regionWest =
+            Region.fromJson(jsonDecode(prefs.getString('regionWest')!));
+        Data.regionEast =
+            Region.fromJson(jsonDecode(prefs.getString('regionEast')!));
+        Data.regionMidWest =
+            Region.fromJson(jsonDecode(prefs.getString('regionMidwest')!));
+        Data.regionSouth =
+            Region.fromJson(jsonDecode(prefs.getString('regionSouth')!));
+        Data.finalPicks =
+            FinalPicks.fromJson(jsonDecode(prefs.getString('finalPicks')!));
+        Data.notReadyYet = false;
+        Data.updateWhetherWeHaveAllPicks();
+        setState(() {});
+        return;
+      }
     }
     final response = await http.get(Uri.parse(Data.csvUrl));
 
     // - PERSIST PICKS ✅
     // - MAKE PICKS READ-ONLY AFTER SUBMITTING ✅
-    // - HAVE ENTRY PASSWORD SCREEN IN FRONT FIRST
+    // - HAVE ENTRY PASSWORD SCREEN IN FRONT FIRST ✅
     // - DOWNLOAD TEAM IMAGES FROM SITE AS WELL
     // - HAVE PRIVACY POLICY FOR DSGVO
 
@@ -212,15 +243,67 @@ class _MyAppState extends State<MyApp> {
   }
 
   final _textStyle = const TextStyle(fontWeight: FontWeight.bold, fontSize: 20);
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    if (Data.regionEast.teams.length == 0) {
-      loadInitialData();
-    }
-    if (Data.notReadyYet) {
+    if (Data.needPassword) {
       return Scaffold(
-        key: _scaffoldKey,
+        body: Center(
+          child: SizedBox(
+            width: 500,
+            height: 500,
+            child: Container(
+              padding: const EdgeInsets.all(15.0),
+              decoration:
+                  BoxDecoration(border: Border.all(color: Colors.black)),
+              child: Column(
+                children: [
+                  Text(
+                    "Welcome to the Traveling Tropy Contest!",
+                    style: _textStyle,
+                  ),
+                  SizedBox(height: 10),
+                  Text("Please enter your entry passphrase here!"),
+                  SizedBox(height: 100),
+                  Form(
+                    key: _formKey,
+                    child: TextFormField(
+                      onFieldSubmitted: (value) => {
+                        if (_formKey.currentState!.validate())
+                          {setPasswordSet()}
+                      },
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Password',
+                      ),
+                      validator: (String? value) {
+                        if (value != "rockchalk") {
+                          return "Wrong password!";
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              setPasswordSet();
+            }
+          },
+          backgroundColor: Colors.blue,
+          child: const Text("Enter"),
+        ),
+      );
+    } else if (Data.notReadyYet) {
+      if (Data.regionEast.teams.length == 0) {
+        loadInitialData();
+      }
+      return Scaffold(
         body: Center(
             child: SizedBox(
                 width: 500,
@@ -498,6 +581,10 @@ class _MyAppState extends State<MyApp> {
     );
     if (response.statusCode >= 200 && response.statusCode <= 299) {
       Data.submittedPicks = true;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool("submittedPicks", true);
+
+      setState(() {});
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         duration: Duration(seconds: 5),
         content: Text("Successfully submitted! Good luck!"),
