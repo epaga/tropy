@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/src/widgets/form.dart';
 
 import 'main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Data {
   static List<Pair> pairings = [
@@ -15,15 +18,29 @@ class Data {
   ];
 
   static bool haveAllPicks = false;
+  static bool submittedPicks = false;
 
   static Region regionWest = Region(teams: [], name: "", picks: []);
   static Region regionEast = Region(teams: [], name: "", picks: []);
   static Region regionSouth = Region(teams: [], name: "", picks: []);
   static Region regionMidWest = Region(teams: [], name: "", picks: []);
+  static bool notReadyYet = true;
+  static String csvUrl = 'https://smoothtrack.app/tropy/initialdata2.csv';
 
   static FinalPicks finalPicks = FinalPicks();
 
+  static void storeToDisk() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('regionWest', jsonEncode(regionWest.toJson()));
+    prefs.setString('regionEast', jsonEncode(regionEast.toJson()));
+    prefs.setString('regionMidwest', jsonEncode(regionMidWest.toJson()));
+    prefs.setString('regionSouth', jsonEncode(regionSouth.toJson()));
+    prefs.setString('finalPicks', jsonEncode(finalPicks.toJson()));
+  }
+
   static void updateWhetherWeHaveAllPicks() {
+    storeToDisk();
+
     haveAllPicks = regionWest.haveAllPicks() &&
         regionEast.haveAllPicks() &&
         regionSouth.haveAllPicks() &&
