@@ -40,61 +40,66 @@ class _BlurryDialogState extends State<BlurryDialog> {
         padding: const EdgeInsets.all(8.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            children: <Widget>[
-              TextFormField(
-                onSaved: (newValue) => {Data.submission.name = newValue!},
-                autovalidateMode: AutovalidateMode.always,
-                validator: (value) =>
-                    value == null || value.length < 5 ? 'Name required.' : null,
-                decoration: InputDecoration(
-                  labelText: 'Real Name',
-                  icon: Icon(Icons.account_box),
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                TextFormField(
+                  onSaved: (newValue) => {Data.submission.name = newValue!},
+                  autovalidateMode: AutovalidateMode.always,
+                  validator: (value) => value == null || value.length < 5
+                      ? 'Name required.'
+                      : null,
+                  decoration: InputDecoration(
+                    labelText: 'Real Name',
+                    icon: Icon(Icons.account_box),
+                  ),
                 ),
-              ),
-              TextFormField(
-                onSaved: (newValue) => {Data.submission.cityState = newValue!},
-                autovalidateMode: AutovalidateMode.always,
-                validator: (value) =>
-                    value == null || value.length < 3 ? 'City required.' : null,
-                decoration: InputDecoration(
-                  labelText: 'City, State',
-                  icon: Icon(Icons.location_city),
+                TextFormField(
+                  onSaved: (newValue) =>
+                      {Data.submission.cityState = newValue!},
+                  autovalidateMode: AutovalidateMode.always,
+                  validator: (value) => value == null || value.length < 3
+                      ? 'City required.'
+                      : null,
+                  decoration: InputDecoration(
+                    labelText: 'City, State',
+                    icon: Icon(Icons.location_city),
+                  ),
                 ),
-              ),
-              TextFormField(
-                onSaved: (newValue) => {Data.submission.postal = newValue!},
-                autovalidateMode: AutovalidateMode.always,
-                validator: (value) => value == null || value.length < 5
-                    ? 'Postal Code required.'
-                    : null,
-                decoration: InputDecoration(
-                  labelText: 'Postal Code',
-                  icon: Icon(Icons.numbers),
+                TextFormField(
+                  onSaved: (newValue) => {Data.submission.postal = newValue!},
+                  autovalidateMode: AutovalidateMode.always,
+                  validator: (value) => value == null || value.length < 5
+                      ? 'Postal Code required.'
+                      : null,
+                  decoration: InputDecoration(
+                    labelText: 'Postal Code',
+                    icon: Icon(Icons.numbers),
+                  ),
                 ),
-              ),
-              TextFormField(
-                onSaved: (newValue) => {Data.submission.country = newValue!},
-                validator: (value) => value == null || value.length < 5
-                    ? 'Country required.'
-                    : null,
-                decoration: InputDecoration(
-                  labelText: 'Country',
-                  icon: Icon(Icons.map),
+                TextFormField(
+                  onSaved: (newValue) => {Data.submission.country = newValue!},
+                  validator: (value) => value == null || value.length < 5
+                      ? 'Country required.'
+                      : null,
+                  decoration: InputDecoration(
+                    labelText: 'Country',
+                    icon: Icon(Icons.map),
+                  ),
                 ),
-              ),
-              TextFormField(
-                onSaved: (newValue) => {Data.submission.email = newValue!},
-                autovalidateMode: AutovalidateMode.always,
-                validator: (value) => value == null || value.length < 5
-                    ? 'Email required.'
-                    : null,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  icon: Icon(Icons.email),
+                TextFormField(
+                  onSaved: (newValue) => {Data.submission.email = newValue!},
+                  autovalidateMode: AutovalidateMode.always,
+                  validator: (value) => value == null || value.length < 5
+                      ? 'Email required.'
+                      : null,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    icon: Icon(Icons.email),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );

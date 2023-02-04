@@ -9,6 +9,7 @@ import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'data.dart';
 import 'blurry.dart';
 
@@ -468,6 +469,7 @@ class _MyAppState extends State<MyApp> {
                                 return;
                               }
                               Data.finalPicks.champ = Data.finalPicks.teamRight;
+                              Data.updateWhetherWeHaveAllPicks();
                             });
                           },
                           // The custom button
@@ -795,6 +797,7 @@ class _RoundColumnState extends State<RoundColumn> {
             }
             widget.regionTop.pick(widget.round, e);
             widget.refresh();
+            setState(() {});
           },
           // The custom button
           child: TeamBoxItem(
@@ -812,6 +815,7 @@ class _RoundColumnState extends State<RoundColumn> {
             }
             widget.regionBottom.pick(widget.round, e);
             widget.refresh();
+            setState(() {});
           },
           // The custom button
           child: TeamBoxItem(
@@ -1018,7 +1022,8 @@ class TeamBoxItem extends StatelessWidget {
     Widget i = teamImageName == ""
         ? SizedBox(width: 30, height: 30)
         : Image(
-            image: AssetImage('assets/${teamImageName}'),
+            image: CachedNetworkImageProvider(
+                'https://smoothtrack.app/tropy/assets/${teamImageName}'),
             errorBuilder: (BuildContext context, Object exception,
                 StackTrace? stackTrace) {
               return SizedBox(width: 30, height: 30);
