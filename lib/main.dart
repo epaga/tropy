@@ -38,10 +38,12 @@ class _MyAppState extends State<MyApp> {
     }
     Data.submittedPicks = prefs.getBool("submittedPicks") ?? false;
     if (Data.submittedPicks) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        duration: Duration(seconds: 5),
-        content: Text("You already submitted your entry! Good luck!"),
-      ));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          duration: Duration(seconds: 5),
+          content: Text("You already submitted your entry! Good luck!"),
+        ));
+      }
     }
 
     if (prefs.getBool("stillNeedPassword") ?? true) {
@@ -379,16 +381,20 @@ class _MyAppState extends State<MyApp> {
       prefs.setBool("submittedPicks", true);
 
       setState(() {});
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        duration: Duration(seconds: 5),
-        content: Text("Successfully submitted! Good luck!"),
-      ));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          duration: Duration(seconds: 5),
+          content: Text("Successfully submitted! Good luck!"),
+        ));
+      }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        duration: Duration(seconds: 5),
-        content: Text(
-            "Error: uh-oh, couldn't submit! Check your internet connection and try later..."),
-      ));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          duration: Duration(seconds: 5),
+          content: Text(
+              "Error: uh-oh, couldn't submit! Check your internet connection and try later..."),
+        ));
+      }
     }
   }
 
