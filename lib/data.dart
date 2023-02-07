@@ -25,12 +25,12 @@ class Data {
   static Region regionSouth = Region(teams: [], name: "", picks: []);
   static Region regionMidWest = Region(teams: [], name: "", picks: []);
   static bool notReadyYet = true;
-  static String csvUrl = 'https://smoothtrack.app/tropy/initialdata2.csv';
+  static String csvUrl = 'https://smoothtrack.app/tropy/initialdata.csv';
   static bool needPassword = false;
 
   static FinalPicks finalPicks = FinalPicks();
 
-  static bool clearPrefsAtStart = true;
+  static bool clearPrefsAtStart = false;
 
   static void storeToDisk() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
