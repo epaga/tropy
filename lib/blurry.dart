@@ -3,40 +3,33 @@ import 'data.dart';
 import 'package:flutter/material.dart';
 
 class BlurryDialog extends StatefulWidget {
-  String title;
-  String content;
-  VoidCallback continueCallBack;
-  bool justMsg;
-  bool showForm;
+  final String title;
+  final String content;
+  final VoidCallback continueCallBack;
+  final bool justMsg;
+  final bool showForm;
 
-  BlurryDialog(this.title, this.content, this.continueCallBack, this.justMsg,
-      this.showForm,
+  const BlurryDialog(this.title, this.content, this.continueCallBack,
+      this.justMsg, this.showForm,
       {super.key});
 
   @override
-  State<BlurryDialog> createState() =>
-      _BlurryDialogState(title, content, continueCallBack, justMsg, showForm);
+  State<BlurryDialog> createState() => _BlurryDialogState();
 }
 
 class _BlurryDialogState extends State<BlurryDialog> {
-  String title;
-  String content;
-  VoidCallback continueCallBack;
-  bool justMsg;
-  bool showForm;
   final _formKey = GlobalKey<FormState>();
-  _BlurryDialogState(this.title, this.content, this.continueCallBack,
-      this.justMsg, this.showForm);
-  TextStyle textStyle = TextStyle(color: Colors.black);
+  _BlurryDialogState();
+  TextStyle textStyle = const TextStyle(color: Colors.black);
   final _privStyle = const TextStyle(color: Colors.grey, fontSize: 10);
 
   @override
   Widget build(BuildContext context) {
     Widget cWidget = Text(
-      content,
+      widget.content,
       style: textStyle,
     );
-    if (showForm && !justMsg) {
+    if (widget.showForm && !widget.justMsg) {
       cWidget = Padding(
         padding: const EdgeInsets.all(8.0),
         child: Form(
@@ -50,7 +43,7 @@ class _BlurryDialogState extends State<BlurryDialog> {
                   validator: (value) => value == null || value.length < 5
                       ? 'Name required.'
                       : null,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Real Name',
                     icon: Icon(Icons.account_box),
                   ),
@@ -62,7 +55,7 @@ class _BlurryDialogState extends State<BlurryDialog> {
                   validator: (value) => value == null || value.length < 3
                       ? 'City required.'
                       : null,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'City, State',
                     icon: Icon(Icons.location_city),
                   ),
@@ -73,7 +66,7 @@ class _BlurryDialogState extends State<BlurryDialog> {
                   validator: (value) => value == null || value.length < 5
                       ? 'Postal Code required.'
                       : null,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Postal Code',
                     icon: Icon(Icons.numbers),
                   ),
@@ -83,7 +76,7 @@ class _BlurryDialogState extends State<BlurryDialog> {
                   validator: (value) => value == null || value.length < 5
                       ? 'Country required.'
                       : null,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Country',
                     icon: Icon(Icons.map),
                   ),
@@ -94,13 +87,13 @@ class _BlurryDialogState extends State<BlurryDialog> {
                   validator: (value) => value == null || value.length < 5
                       ? 'Email required.'
                       : null,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Email',
                     icon: Icon(Icons.email),
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(32.0),
+                  padding: const EdgeInsets.all(32.0),
                   child: Text(
                     "Note: Your data will not be passed on to any third party, it will only be used for keeping track of your contest entry!",
                     style: _privStyle,
@@ -116,41 +109,41 @@ class _BlurryDialogState extends State<BlurryDialog> {
         filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
         child: AlertDialog(
           title: Text(
-            title,
+            widget.title,
             style: textStyle,
           ),
           content: cWidget,
           actionsAlignment: MainAxisAlignment.spaceEvenly,
-          actions: justMsg
+          actions: widget.justMsg
               ? <Widget>[
                   TextButton(
-                    child: Text("OK"),
+                    child: const Text("OK"),
                     onPressed: () {
-                      continueCallBack();
+                      widget.continueCallBack();
                     },
                   ),
                 ]
               : <Widget>[
                   TextButton(
-                    child: Text("Submit"),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         _formKey.currentState!.save();
-                        continueCallBack();
+                        widget.continueCallBack();
                       }
                     },
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.orange,
                     ),
+                    child: const Text("Submit"),
                   ),
                   TextButton(
-                    child: Text("Not Yet"),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.black,
                     ),
+                    child: const Text("Not Yet"),
                   ),
                 ],
         ));

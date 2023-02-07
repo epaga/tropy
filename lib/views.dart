@@ -13,57 +13,57 @@ class TwoToOnePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // Create a Paint object.
-    Paint _paint = Paint()
+    Paint paint = Paint()
       ..color = Colors.black
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke
       ..strokeJoin = StrokeJoin.round;
 
     // Set the color of the paint to blue.
-    _paint.color = Colors.blue;
+    paint.color = Colors.blue;
 
     // super embarrassingly duplicated code since i'm running out of time...
     if (round == 1) {
-      drawTwoToOne(canvas, _paint, 0, 0, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 2, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 3, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 4, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 5, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 6, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 7, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 8 + 26, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 9 + 26, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 10 + 26, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 11 + 26, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 12 + 26, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 13 + 26, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 14 + 26, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 15 + 26, 40, backwards);
+      drawTwoToOne(canvas, paint, 0, 0, 40, backwards);
+      drawTwoToOne(canvas, paint, 0, 94, 40, backwards);
+      drawTwoToOne(canvas, paint, 0, 94 * 2, 40, backwards);
+      drawTwoToOne(canvas, paint, 0, 94 * 3, 40, backwards);
+      drawTwoToOne(canvas, paint, 0, 94 * 4, 40, backwards);
+      drawTwoToOne(canvas, paint, 0, 94 * 5, 40, backwards);
+      drawTwoToOne(canvas, paint, 0, 94 * 6, 40, backwards);
+      drawTwoToOne(canvas, paint, 0, 94 * 7, 40, backwards);
+      drawTwoToOne(canvas, paint, 0, 94 * 8 + 26, 40, backwards);
+      drawTwoToOne(canvas, paint, 0, 94 * 9 + 26, 40, backwards);
+      drawTwoToOne(canvas, paint, 0, 94 * 10 + 26, 40, backwards);
+      drawTwoToOne(canvas, paint, 0, 94 * 11 + 26, 40, backwards);
+      drawTwoToOne(canvas, paint, 0, 94 * 12 + 26, 40, backwards);
+      drawTwoToOne(canvas, paint, 0, 94 * 13 + 26, 40, backwards);
+      drawTwoToOne(canvas, paint, 0, 94 * 14 + 26, 40, backwards);
+      drawTwoToOne(canvas, paint, 0, 94 * 15 + 26, 40, backwards);
     } else if (round == 2) {
-      drawTwoToOne(canvas, _paint, 0, 18, 94, backwards);
-      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 2, 94, backwards);
-      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 4, 94, backwards);
-      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 6, 94, backwards);
-      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 8 + 26, 94, backwards);
-      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 10 + 26, 94, backwards);
-      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 12 + 26, 94, backwards);
-      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 14 + 26, 94, backwards);
+      drawTwoToOne(canvas, paint, 0, 18, 94, backwards);
+      drawTwoToOne(canvas, paint, 0, 18 + 94 * 2, 94, backwards);
+      drawTwoToOne(canvas, paint, 0, 18 + 94 * 4, 94, backwards);
+      drawTwoToOne(canvas, paint, 0, 18 + 94 * 6, 94, backwards);
+      drawTwoToOne(canvas, paint, 0, 18 + 94 * 8 + 26, 94, backwards);
+      drawTwoToOne(canvas, paint, 0, 18 + 94 * 10 + 26, 94, backwards);
+      drawTwoToOne(canvas, paint, 0, 18 + 94 * 12 + 26, 94, backwards);
+      drawTwoToOne(canvas, paint, 0, 18 + 94 * 14 + 26, 94, backwards);
     } else if (round == 3) {
-      drawTwoToOne(canvas, _paint, 0, 65, 188, backwards);
-      drawTwoToOne(canvas, _paint, 0, 65 + 94 * 4, 188, backwards);
-      drawTwoToOne(canvas, _paint, 0, 65 + 94 * 8 + 26, 188, backwards);
-      drawTwoToOne(canvas, _paint, 0, 65 + 94 * 12 + 26, 188, backwards);
+      drawTwoToOne(canvas, paint, 0, 65, 188, backwards);
+      drawTwoToOne(canvas, paint, 0, 65 + 94 * 4, 188, backwards);
+      drawTwoToOne(canvas, paint, 0, 65 + 94 * 8 + 26, 188, backwards);
+      drawTwoToOne(canvas, paint, 0, 65 + 94 * 12 + 26, 188, backwards);
     } else if (round == 4) {
-      drawTwoToOne(canvas, _paint, 0, 160, 188 * 2, backwards);
-      drawTwoToOne(canvas, _paint, 0, 160 + 94 * 8 + 26, 188 * 2, backwards);
+      drawTwoToOne(canvas, paint, 0, 160, 188 * 2, backwards);
+      drawTwoToOne(canvas, paint, 0, 160 + 94 * 8 + 26, 188 * 2, backwards);
     } else if (round == 5) {
-      drawTwoToOne(canvas, _paint, 0, 345, 188 * 4 + 26, backwards);
+      drawTwoToOne(canvas, paint, 0, 345, 188 * 4 + 26, backwards);
     } else if (round == 6) {
       var path = Path();
       path.moveTo(0, 188 * 4 + 26);
       path.lineTo(40, 188 * 4 + 26);
-      canvas.drawPath(path, _paint);
+      canvas.drawPath(path, paint);
     }
   }
 
@@ -118,8 +118,8 @@ class _RoundColumnState extends State<RoundColumn> {
 
   @override
   Widget build(BuildContext context) {
-    if (Data.regionEast.teams.length == 0) {
-      return Text("");
+    if (Data.regionEast.teams.isEmpty) {
+      return const Text("");
     }
     var picks = widget.regionTop.picks[widget.round - 1];
     var topList = picks.map((e) {
@@ -179,24 +179,24 @@ class _RoundColumnState extends State<RoundColumn> {
       width: 0,
       height: spaceTop,
     ));
-    topList.forEach((element) {
+    for (var element in topList) {
       totalList.add(element);
       totalList.add(SizedBox(
         width: 0,
         height: spaceInBetween,
       ));
-    });
+    }
     totalList.add(Container(
         margin: const EdgeInsets.fromLTRB(0, 0, 0, 3),
         child: Text("", style: _textStyle)));
 //    totalList.addAll(topList);
-    bottomList.forEach((element) {
+    for (var element in bottomList) {
       totalList.add(element);
       totalList.add(SizedBox(
         width: 0,
         height: spaceInBetween,
       ));
-    });
+    }
     totalList.removeLast();
     return Column(
       children: totalList,
@@ -222,8 +222,8 @@ class TeamColumn extends StatefulWidget {
 class _TeamColumnState extends State<TeamColumn> {
   @override
   Widget build(BuildContext context) {
-    if (Data.regionEast.teams.length == 0) {
-      return Text("");
+    if (Data.regionEast.teams.isEmpty) {
+      return const Text("");
     }
     List<Widget> topList = Data.pairings.map(
       (e) {
@@ -366,13 +366,13 @@ class TeamBoxItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget i = teamImageName == ""
-        ? SizedBox(width: 30, height: 30)
+        ? const SizedBox(width: 30, height: 30)
         : Image(
             image: CachedNetworkImageProvider(
-                'https://smoothtrack.app/tropy/assets/${teamImageName}'),
+                'https://smoothtrack.app/tropy/assets/$teamImageName'),
             errorBuilder: (BuildContext context, Object exception,
                 StackTrace? stackTrace) {
-              return SizedBox(width: 30, height: 30);
+              return const SizedBox(width: 30, height: 30);
             },
             width: 30,
             height: 30,
@@ -435,9 +435,9 @@ class InitialPasswordScreenState extends State<InitialPasswordScreen> {
                   "Welcome to the Traveling Tropy Contest!",
                   style: _textStyle,
                 ),
-                SizedBox(height: 10),
-                Text("Please enter your entry passphrase here!"),
-                SizedBox(height: 100),
+                const SizedBox(height: 10),
+                const Text("Please enter your entry passphrase here!"),
+                const SizedBox(height: 100),
                 Form(
                   key: _formKey,
                   child: TextFormField(

@@ -76,7 +76,7 @@ class _MyAppState extends State<MyApp> {
 
     var initialdatacsv =
         response.body; //rootBundle.loadString('assets/initialdata.csv');
-    var list = CsvToListConverter(eol: "\n").convert(initialdatacsv);
+    var list = const CsvToListConverter(eol: "\n").convert(initialdatacsv);
     if (list.isEmpty) {
       Data.notReadyYet = true;
     } else {
@@ -95,7 +95,7 @@ class _MyAppState extends State<MyApp> {
     if (Data.needPassword) {
       return InitialPasswordScreen(loadInitialData: loadInitialData);
     } else if (Data.notReadyYet) {
-      if (Data.regionEast.teams.length == 0) {
+      if (Data.regionEast.teams.isEmpty) {
         loadInitialData();
       }
       return Scaffold(
@@ -111,8 +111,8 @@ class _MyAppState extends State<MyApp> {
                           "Not ready yet!",
                           style: _textStyle,
                         ),
-                        SizedBox(height: 10),
-                        Text(
+                        const SizedBox(height: 10),
+                        const Text(
                             "We're going to need to wait until the teams are picked.")
                       ],
                     )))),
@@ -152,7 +152,7 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
-                      size: Size(40, 1600),
+                      size: const Size(40, 1600),
                       painter: TwoToOnePainter(1),
                     ),
                   ),
@@ -166,7 +166,7 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
-                      size: Size(40, 1600),
+                      size: const Size(40, 1600),
                       painter: TwoToOnePainter(2),
                     ),
                   ),
@@ -180,7 +180,7 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
-                      size: Size(40, 1600),
+                      size: const Size(40, 1600),
                       painter: TwoToOnePainter(3),
                     ),
                   ),
@@ -194,7 +194,7 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
-                      size: Size(40, 1600),
+                      size: const Size(40, 1600),
                       painter: TwoToOnePainter(4),
                     ),
                   ),
@@ -208,7 +208,7 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
-                      size: Size(40, 1600),
+                      size: const Size(40, 1600),
                       painter: TwoToOnePainter(5),
                     ),
                   ),
@@ -234,7 +234,7 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
-                      size: Size(40, 1600),
+                      size: const Size(40, 1600),
                       painter: TwoToOnePainter(6, backwards: false),
                     ),
                   ),
@@ -247,7 +247,7 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
-                      size: Size(40, 1600),
+                      size: const Size(40, 1600),
                       painter: TwoToOnePainter(6, backwards: true),
                     ),
                   ),
@@ -273,7 +273,7 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
-                      size: Size(40, 1600),
+                      size: const Size(40, 1600),
                       painter: TwoToOnePainter(5, backwards: true),
                     ),
                   ),
@@ -287,7 +287,7 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
-                      size: Size(40, 1600),
+                      size: const Size(40, 1600),
                       painter: TwoToOnePainter(4, backwards: true),
                     ),
                   ),
@@ -301,7 +301,7 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
-                      size: Size(40, 1600),
+                      size: const Size(40, 1600),
                       painter: TwoToOnePainter(3, backwards: true),
                     ),
                   ),
@@ -315,7 +315,7 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
-                      size: Size(40, 1600),
+                      size: const Size(40, 1600),
                       painter: TwoToOnePainter(2, backwards: true),
                     ),
                   ),
@@ -329,7 +329,7 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
-                      size: Size(40, 1600),
+                      size: const Size(40, 1600),
                       painter: TwoToOnePainter(1, backwards: true),
                     ),
                   ),
@@ -379,13 +379,12 @@ class _MyAppState extends State<MyApp> {
       prefs.setBool("submittedPicks", true);
 
       setState(() {});
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         duration: Duration(seconds: 5),
         content: Text("Successfully submitted! Good luck!"),
       ));
     } else {
-      print(response.statusCode);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         duration: Duration(seconds: 5),
         content: Text(
             "Error: uh-oh, couldn't submit! Check your internet connection and try later..."),
@@ -405,6 +404,7 @@ class _MyAppState extends State<MyApp> {
       entry.2137142274 // email
       entry.795823503 // picks
       */
+      // ignore: prefer_interpolation_to_compose_strings
       var postData = "entry.1605530316=" +
           Uri.encodeFull(Data.submission.firstName()) +
           "&entry.1938482540=" +
@@ -423,25 +423,9 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  _showNotReadyYet(BuildContext context) {
-    VoidCallback continueCallBack = () => {Navigator.of(context).pop()};
-    BlurryDialog alert = BlurryDialog(
-        "Not ready yet!",
-        "We don't yet know the team selection! You're going to have to wait a while",
-        continueCallBack,
-        true,
-        false);
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
-
   _showDialog(BuildContext context) {
     bool ready = Data.haveAllPicks;
-    VoidCallback continueCallBack = () => {
+    continueCallBack() => {
           _voidCallback(context, ready),
         };
     BlurryDialog alert = BlurryDialog(
