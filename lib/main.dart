@@ -9,8 +9,8 @@ import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'data.dart';
+import 'views.dart';
 import 'blurry.dart';
 
 part 'main.g.dart';
@@ -22,150 +22,6 @@ void main() async {
   ));
 }
 
-Region region(String regionName, List<List<dynamic>> list) {
-  return Region(
-      name: regionName,
-      picks: [
-        [null, null, null, null, null, null, null, null],
-        [null, null, null, null],
-        [null, null],
-        [null]
-      ],
-      teams: list
-          .where((element) => element[2] == regionName)
-          .map((e) =>
-              Team(name: e[0], seed: e[1], region: e[2], imageName: e[3]))
-          .toList());
-}
-
-@JsonSerializable()
-class Team {
-  Team(
-      {required this.name,
-      required this.seed,
-      required this.region,
-      required this.imageName});
-
-  final String name;
-  final int seed;
-  final String region;
-  final String imageName;
-
-  /// Connect the generated [_$TeamFromJson] function to the `fromJson`
-  /// factory.
-  factory Team.fromJson(Map<String, dynamic> json) => _$TeamFromJson(json);
-
-  /// Connect the generated [_$TeamToJson] function to the `toJson` method.
-  Map<String, dynamic> toJson() => _$TeamToJson(this);
-}
-
-@JsonSerializable()
-class Region {
-  Region({required this.teams, required this.name, required this.picks});
-  final List<Team> teams;
-  final String name;
-  List<List<Team?>> picks;
-
-  /// Connect the generated [_$RegionFromJson] function to the `fromJson`
-  /// factory.
-  factory Region.fromJson(Map<String, dynamic> json) => _$RegionFromJson(json);
-
-  /// Connect the generated [_$RegionToJson] function to the `toJson` method.
-  Map<String, dynamic> toJson() => _$RegionToJson(this);
-
-  teamBySeed(s) {
-    return teams.firstWhere((team) => team.seed == s);
-  }
-
-  firstRoundPick(s) {
-    int index =
-        Data.pairings.indexWhere((element) => element.a == s || element.b == s);
-    removePicksOfTeamAfter(0, picks[0][index]);
-    picks[0][index] = teamBySeed(s);
-    Data.updateWhetherWeHaveAllPicks();
-  }
-
-  nullIfTeamIs(Team? teamToCheck, Team? teamToCompareWith) {
-    if (teamToCheck?.name == teamToCompareWith?.name) {
-      return null;
-    } else {
-      return teamToCheck;
-    }
-  }
-
-  removePicksOfTeamAfter(round, Team? team) {
-    if (team == null) {
-      return;
-    }
-    Data.finalPicks.champ = nullIfTeamIs(Data.finalPicks.champ, team);
-    Data.finalPicks.teamLeft = nullIfTeamIs(Data.finalPicks.teamLeft, team);
-    Data.finalPicks.teamRight = nullIfTeamIs(Data.finalPicks.teamRight, team);
-    int i = round + 1;
-    while (i < 4) {
-      int index = picks[i].indexWhere((element) => element?.name == team.name);
-      if (index >= 0) {
-        picks[i][index] = null;
-      } else {
-        break;
-      }
-      i++;
-    }
-  }
-
-  pick(round, team) {
-    if (round == 4) {
-      if (name == Data.regionWest.name || name == Data.regionEast.name) {
-        removePicksOfTeamAfter(round, Data.finalPicks.teamLeft);
-        Data.finalPicks.teamLeft = team;
-      } else {
-        removePicksOfTeamAfter(round, Data.finalPicks.teamRight);
-        Data.finalPicks.teamRight = team;
-      }
-    } else {
-      int index = picks[round - 1].indexWhere((element) => element == team);
-      removePicksOfTeamAfter(round, picks[round][index ~/ 2]);
-      picks[round][index ~/ 2] = team!;
-    }
-    Data.updateWhetherWeHaveAllPicks();
-  }
-
-  bool haveAllPicks() {
-    var result =
-        picks.every((element) => element.every((pick) => pick != null));
-    return result;
-  }
-
-  picksString(int round) {
-    return picks[round]
-        .map((e) => e!.region.substring(0, 1) + e!.seed.toString())
-        .join(",");
-  }
-}
-
-@JsonSerializable()
-class FinalPicks {
-  Team? teamLeft;
-  Team? champ;
-  Team? teamRight;
-
-  FinalPicks() {}
-
-  /// Connect the generated [_$FinalPicksFromJson] function to the `fromJson`
-  /// factory.
-  factory FinalPicks.fromJson(Map<String, dynamic> json) =>
-      _$FinalPicksFromJson(json);
-
-  /// Connect the generated [_$FinalPicksToJson] function to the `toJson` method.
-  Map<String, dynamic> toJson() => _$FinalPicksToJson(this);
-}
-
-class Pair<T1, T2> {
-  final T1 a;
-  final T2 b;
-
-  Pair(this.a, this.b);
-}
-
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -174,13 +30,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  setPasswordSet() async {
-    Data.needPassword = false;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool("stillNeedPassword", false);
-    loadInitialData();
-  }
-
   loadInitialData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (Data.clearPrefsAtStart) {
@@ -196,6 +45,7 @@ class _MyAppState extends State<MyApp> {
     }
 
     if (prefs.getBool("stillNeedPassword") ?? true) {
+      // don't load any data: the user still needs to enter their initial password
       Data.notReadyYet = true;
       Data.needPassword = true;
       setState(() {});
@@ -222,10 +72,6 @@ class _MyAppState extends State<MyApp> {
     }
     final response = await http.get(Uri.parse(Data.csvUrl));
 
-    // - PERSIST PICKS ✅
-    // - MAKE PICKS READ-ONLY AFTER SUBMITTING ✅
-    // - HAVE ENTRY PASSWORD SCREEN IN FRONT FIRST ✅
-    // - DOWNLOAD TEAM IMAGES FROM SITE AS WELL
     // - HAVE PRIVACY POLICY FOR DSGVO
 
     var initialdatacsv =
@@ -244,62 +90,10 @@ class _MyAppState extends State<MyApp> {
   }
 
   final _textStyle = const TextStyle(fontWeight: FontWeight.bold, fontSize: 20);
-  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     if (Data.needPassword) {
-      return Scaffold(
-        body: Center(
-          child: SizedBox(
-            width: 500,
-            height: 500,
-            child: Container(
-              padding: const EdgeInsets.all(15.0),
-              decoration:
-                  BoxDecoration(border: Border.all(color: Colors.black)),
-              child: Column(
-                children: [
-                  Text(
-                    "Welcome to the Traveling Tropy Contest!",
-                    style: _textStyle,
-                  ),
-                  SizedBox(height: 10),
-                  Text("Please enter your entry passphrase here!"),
-                  SizedBox(height: 100),
-                  Form(
-                    key: _formKey,
-                    child: TextFormField(
-                      onFieldSubmitted: (value) => {
-                        if (_formKey.currentState!.validate())
-                          {setPasswordSet()}
-                      },
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                      ),
-                      validator: (String? value) {
-                        if (value != "rockchalk") {
-                          return "Wrong password!";
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              setPasswordSet();
-            }
-          },
-          backgroundColor: Colors.blue,
-          child: const Text("Enter"),
-        ),
-      );
+      return InitialPasswordScreen(loadInitialData: loadInitialData);
     } else if (Data.notReadyYet) {
       if (Data.regionEast.teams.length == 0) {
         loadInitialData();
@@ -670,386 +464,131 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-class TwoToOnePainter extends CustomPainter {
-  TwoToOnePainter(this.round, {this.backwards = false});
+//------------- JSON structures
+@JsonSerializable()
+class Team {
+  Team(
+      {required this.name,
+      required this.seed,
+      required this.region,
+      required this.imageName});
 
-  final int round;
-  final bool backwards;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    // Create a Paint object.
-    Paint _paint = Paint()
-      ..color = Colors.black
-      ..strokeWidth = 1.0
-      ..style = PaintingStyle.stroke
-      ..strokeJoin = StrokeJoin.round;
-
-    // Set the color of the paint to blue.
-    _paint.color = Colors.blue;
-
-    // super embarrassingly duplicated code since i'm running out of time...
-    if (round == 1) {
-      drawTwoToOne(canvas, _paint, 0, 0, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 2, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 3, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 4, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 5, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 6, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 7, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 8 + 26, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 9 + 26, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 10 + 26, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 11 + 26, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 12 + 26, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 13 + 26, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 14 + 26, 40, backwards);
-      drawTwoToOne(canvas, _paint, 0, 94 * 15 + 26, 40, backwards);
-    } else if (round == 2) {
-      drawTwoToOne(canvas, _paint, 0, 18, 94, backwards);
-      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 2, 94, backwards);
-      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 4, 94, backwards);
-      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 6, 94, backwards);
-      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 8 + 26, 94, backwards);
-      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 10 + 26, 94, backwards);
-      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 12 + 26, 94, backwards);
-      drawTwoToOne(canvas, _paint, 0, 18 + 94 * 14 + 26, 94, backwards);
-    } else if (round == 3) {
-      drawTwoToOne(canvas, _paint, 0, 65, 188, backwards);
-      drawTwoToOne(canvas, _paint, 0, 65 + 94 * 4, 188, backwards);
-      drawTwoToOne(canvas, _paint, 0, 65 + 94 * 8 + 26, 188, backwards);
-      drawTwoToOne(canvas, _paint, 0, 65 + 94 * 12 + 26, 188, backwards);
-    } else if (round == 4) {
-      drawTwoToOne(canvas, _paint, 0, 160, 188 * 2, backwards);
-      drawTwoToOne(canvas, _paint, 0, 160 + 94 * 8 + 26, 188 * 2, backwards);
-    } else if (round == 5) {
-      drawTwoToOne(canvas, _paint, 0, 345, 188 * 4 + 26, backwards);
-    } else if (round == 6) {
-      var path = Path();
-      path.moveTo(0, 188 * 4 + 26);
-      path.lineTo(40, 188 * 4 + 26);
-      canvas.drawPath(path, _paint);
-    }
-  }
-
-  void drawTwoToOne(Canvas canvas, Paint paint, double x, double y,
-      double height, bool backwards) {
-    if (backwards) {
-      var path = Path();
-      path.moveTo(x + 40, y + 50);
-      path.lineTo(x + 40 - 25, y + 50);
-      path.lineTo(x + 40 - 25, y + 50 + height);
-      path.lineTo(x + 40, y + 50 + height);
-      path.moveTo(x + 40 - 25, y + 50 + height / 2);
-      path.lineTo(x, y + 50 + height / 2);
-      canvas.drawPath(path, paint);
-    } else {
-      var path = Path();
-      path.moveTo(x, y + 50);
-      path.lineTo(x + 25, y + 50);
-      path.lineTo(x + 25, y + 50 + height);
-      path.lineTo(x, y + 50 + height);
-      path.moveTo(x + 25, y + 50 + height / 2);
-      path.lineTo(x + 40, y + 50 + height / 2);
-      canvas.drawPath(path, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return false;
-  }
-}
-
-class RoundColumn extends StatefulWidget {
-  const RoundColumn(
-      {required this.regionTop,
-      required this.regionBottom,
-      required this.round,
-      required this.refresh,
-      super.key});
-
-  final Region regionTop;
-  final Region regionBottom;
-  final int round;
-  final Function() refresh;
-
-  @override
-  State<RoundColumn> createState() => _RoundColumnState();
-}
-
-class _RoundColumnState extends State<RoundColumn> {
-  final _textStyle = const TextStyle(fontWeight: FontWeight.bold, fontSize: 20);
-
-  @override
-  Widget build(BuildContext context) {
-    if (Data.regionEast.teams.length == 0) {
-      return Text("");
-    }
-    var picks = widget.regionTop.picks[widget.round - 1];
-    var topList = picks.map((e) {
-      return GestureDetector(
-          // When the child is tapped, show a snackbar.
-          onTap: () {
-            if (Data.submittedPicks) {
-              return;
-            }
-            widget.regionTop.pick(widget.round, e);
-            widget.refresh();
-            setState(() {});
-          },
-          // The custom button
-          child: TeamBoxItem(
-              teamName: e?.name ?? "",
-              teamImageName: e?.imageName ?? "",
-              seed: -1));
-    }).toList();
-    var bottomPicks = widget.regionBottom.picks[widget.round - 1];
-    var bottomList = bottomPicks.map((e) {
-      return GestureDetector(
-          // When the child is tapped, show a snackbar.
-          onTap: () {
-            if (Data.submittedPicks) {
-              return;
-            }
-            widget.regionBottom.pick(widget.round, e);
-            widget.refresh();
-            setState(() {});
-          },
-          // The custom button
-          child: TeamBoxItem(
-              teamName: e?.name ?? "",
-              teamImageName: e?.imageName ?? "",
-              seed: -1));
-    }).toList();
-    final double spaceTop = widget.round == 1
-        ? 20
-        : widget.round == 2
-            ? 68
-            : widget.round == 3
-                ? 163
-                : 350;
-    final double spaceInBetween = widget.round == 1
-        ? 50
-        : widget.round == 2
-            ? 144
-            : widget.round == 3
-                ? 330
-                : 700;
-    List<Widget> totalList = [];
-    totalList.add(Container(
-        margin: const EdgeInsets.fromLTRB(0, 0, 0, 3),
-        child: Text("", style: _textStyle)));
-    totalList.add(SizedBox(
-      width: 0,
-      height: spaceTop,
-    ));
-    topList.forEach((element) {
-      totalList.add(element);
-      totalList.add(SizedBox(
-        width: 0,
-        height: spaceInBetween,
-      ));
-    });
-    totalList.add(Container(
-        margin: const EdgeInsets.fromLTRB(0, 0, 0, 3),
-        child: Text("", style: _textStyle)));
-//    totalList.addAll(topList);
-    bottomList.forEach((element) {
-      totalList.add(element);
-      totalList.add(SizedBox(
-        width: 0,
-        height: spaceInBetween,
-      ));
-    });
-    totalList.removeLast();
-    return Column(
-      children: totalList,
-    );
-  }
-}
-
-class TeamColumn extends StatefulWidget {
-  const TeamColumn(
-      {required this.regionTop,
-      required this.regionBottom,
-      required this.refresh,
-      super.key});
-
-  final Region regionTop;
-  final Region regionBottom;
-  final Function() refresh;
-
-  @override
-  State<TeamColumn> createState() => _TeamColumnState();
-}
-
-class _TeamColumnState extends State<TeamColumn> {
-  final _textStyle = const TextStyle(fontWeight: FontWeight.bold, fontSize: 20);
-
-  @override
-  Widget build(BuildContext context) {
-    if (Data.regionEast.teams.length == 0) {
-      return Text("");
-    }
-    List<Widget> topList = Data.pairings.map(
-      (e) {
-        return PairingItem(
-          t1: widget.regionTop.teamBySeed(e.a),
-          t2: widget.regionTop.teamBySeed(e.b),
-          tapped: () => {
-            setState(() {
-              if (Data.submittedPicks) {
-                return;
-              }
-              widget.regionTop.firstRoundPick(e.a);
-              widget.refresh();
-            })
-          },
-          tapped2: () => {
-            setState(() {
-              if (Data.submittedPicks) {
-                return;
-              }
-              widget.regionTop.firstRoundPick(e.b);
-              widget.refresh();
-            })
-          },
-        );
-      },
-    ).toList();
-    List<Widget> bottomList = Data.pairings.map(
-      (e) {
-        return PairingItem(
-          t1: widget.regionBottom.teamBySeed(e.a),
-          t2: widget.regionBottom.teamBySeed(e.b),
-          tapped: () => {
-            setState(() {
-              if (Data.submittedPicks) {
-                return;
-              }
-              widget.regionBottom.firstRoundPick(e.a);
-              widget.refresh();
-            })
-          },
-          tapped2: () => {
-            setState(() {
-              if (Data.submittedPicks) {
-                return;
-              }
-              widget.regionBottom.firstRoundPick(e.b);
-              widget.refresh();
-            })
-          },
-        );
-      },
-    ).toList();
-    List<Widget> totalList = [];
-    totalList.add(Text(
-      widget.regionTop.name,
-      style: _textStyle,
-    ));
-    totalList.addAll(topList);
-    totalList.add(Text(
-      widget.regionBottom.name,
-      style: _textStyle,
-    ));
-    totalList.addAll(bottomList);
-
-    return Column(
-      children: totalList,
-    );
-  }
-}
-
-class PairingItem extends StatelessWidget {
-  const PairingItem(
-      {required this.t1,
-      required this.t2,
-      required this.tapped,
-      required this.tapped2,
-      super.key});
-
-  final Team t1;
-  final Team t2;
-  final Function() tapped;
-  final Function() tapped2;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(0, 3, 0, 3),
-      child: Column(
-        children: [
-          GestureDetector(
-              // When the child is tapped, show a snackbar.
-              onTap: () {
-                tapped();
-              },
-              // The custom button
-              child: TeamBoxItem.fromTeam(t1)),
-          GestureDetector(
-              // When the child is tapped, show a snackbar.
-              onTap: () {
-                tapped2();
-              },
-              // The custom button
-              child: TeamBoxItem.fromTeam(t2)),
-        ],
-      ),
-    );
-  }
-}
-
-class TeamBoxItem extends StatelessWidget {
-  const TeamBoxItem(
-      {super.key,
-      required this.teamName,
-      required this.teamImageName,
-      required this.seed});
-  factory TeamBoxItem.fromTeam(Team team) {
-    return TeamBoxItem(
-        teamName: team.name, teamImageName: team.imageName, seed: team.seed);
-  }
-  final String teamImageName;
-  final String teamName;
+  final String name;
   final int seed;
-  final _textStyle = const TextStyle(fontWeight: FontWeight.bold);
+  final String region;
+  final String imageName;
 
-  @override
-  Widget build(BuildContext context) {
-    Widget i = teamImageName == ""
-        ? SizedBox(width: 30, height: 30)
-        : Image(
-            image: CachedNetworkImageProvider(
-                'https://smoothtrack.app/tropy/assets/${teamImageName}'),
-            errorBuilder: (BuildContext context, Object exception,
-                StackTrace? stackTrace) {
-              return SizedBox(width: 30, height: 30);
-            },
-            width: 30,
-            height: 30,
-          );
+  /// Connect the generated [_$TeamFromJson] function to the `fromJson`
+  /// factory.
+  factory Team.fromJson(Map<String, dynamic> json) => _$TeamFromJson(json);
 
-    return Container(
-        margin: const EdgeInsets.fromLTRB(0, 3, 0, 3),
-        padding: const EdgeInsets.all(3),
-        decoration: BoxDecoration(border: Border.all(color: Colors.blueAccent)),
-        child: Row(
-          children: [
-            Text(
-              "${seed < 0 ? "" : seed}",
-              style: _textStyle,
-            ),
-            const Spacer(),
-            Text(
-              teamName,
-              style: _textStyle,
-            ),
-            const SizedBox(width: 10),
-            i
-          ],
-        ));
+  /// Connect the generated [_$TeamToJson] function to the `toJson` method.
+  Map<String, dynamic> toJson() => _$TeamToJson(this);
+}
+
+@JsonSerializable()
+class Region {
+  Region({required this.teams, required this.name, required this.picks});
+  final List<Team> teams;
+  final String name;
+  List<List<Team?>> picks;
+
+  /// Connect the generated [_$RegionFromJson] function to the `fromJson`
+  /// factory.
+  factory Region.fromJson(Map<String, dynamic> json) => _$RegionFromJson(json);
+
+  /// Connect the generated [_$RegionToJson] function to the `toJson` method.
+  Map<String, dynamic> toJson() => _$RegionToJson(this);
+
+  teamBySeed(s) {
+    return teams.firstWhere((team) => team.seed == s);
   }
+
+  firstRoundPick(s) {
+    int index =
+        Data.pairings.indexWhere((element) => element.a == s || element.b == s);
+    removePicksOfTeamAfter(0, picks[0][index]);
+    picks[0][index] = teamBySeed(s);
+    Data.updateWhetherWeHaveAllPicks();
+  }
+
+  nullIfTeamIs(Team? teamToCheck, Team? teamToCompareWith) {
+    if (teamToCheck?.name == teamToCompareWith?.name) {
+      return null;
+    } else {
+      return teamToCheck;
+    }
+  }
+
+  removePicksOfTeamAfter(round, Team? team) {
+    if (team == null) {
+      return;
+    }
+    Data.finalPicks.champ = nullIfTeamIs(Data.finalPicks.champ, team);
+    Data.finalPicks.teamLeft = nullIfTeamIs(Data.finalPicks.teamLeft, team);
+    Data.finalPicks.teamRight = nullIfTeamIs(Data.finalPicks.teamRight, team);
+    int i = round + 1;
+    while (i < 4) {
+      int index = picks[i].indexWhere((element) => element?.name == team.name);
+      if (index >= 0) {
+        picks[i][index] = null;
+      } else {
+        break;
+      }
+      i++;
+    }
+  }
+
+  pick(round, team) {
+    if (round == 4) {
+      if (name == Data.regionWest.name || name == Data.regionEast.name) {
+        removePicksOfTeamAfter(round, Data.finalPicks.teamLeft);
+        Data.finalPicks.teamLeft = team;
+      } else {
+        removePicksOfTeamAfter(round, Data.finalPicks.teamRight);
+        Data.finalPicks.teamRight = team;
+      }
+    } else {
+      int index = picks[round - 1].indexWhere((element) => element == team);
+      removePicksOfTeamAfter(round, picks[round][index ~/ 2]);
+      picks[round][index ~/ 2] = team!;
+    }
+    Data.updateWhetherWeHaveAllPicks();
+  }
+
+  bool haveAllPicks() {
+    var result =
+        picks.every((element) => element.every((pick) => pick != null));
+    return result;
+  }
+
+  picksString(int round) {
+    return picks[round]
+        .map((e) => e!.region.substring(0, 1) + e.seed.toString())
+        .join(",");
+  }
+}
+
+@JsonSerializable()
+class FinalPicks {
+  Team? teamLeft;
+  Team? champ;
+  Team? teamRight;
+
+  FinalPicks();
+
+  /// Connect the generated [_$FinalPicksFromJson] function to the `fromJson`
+  /// factory.
+  factory FinalPicks.fromJson(Map<String, dynamic> json) =>
+      _$FinalPicksFromJson(json);
+
+  /// Connect the generated [_$FinalPicksToJson] function to the `toJson` method.
+  Map<String, dynamic> toJson() => _$FinalPicksToJson(this);
+}
+
+class Pair<T1, T2> {
+  final T1 a;
+  final T2 b;
+
+  Pair(this.a, this.b);
 }

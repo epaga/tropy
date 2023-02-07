@@ -137,3 +137,19 @@ class Submission {
     return name.substring(name.lastIndexOf(' ') + 1);
   }
 }
+
+Region region(String regionName, List<List<dynamic>> list) {
+  return Region(
+      name: regionName,
+      picks: [
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null],
+        [null, null],
+        [null]
+      ],
+      teams: list
+          .where((element) => element[2] == regionName)
+          .map((e) =>
+              Team(name: e[0], seed: e[1], region: e[2], imageName: e[3]))
+          .toList());
+}
