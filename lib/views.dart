@@ -428,15 +428,20 @@ class InitialPasswordScreenState extends State<InitialPasswordScreen> {
           height: 500,
           child: Container(
             padding: const EdgeInsets.all(15.0),
-            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
             child: Column(
               children: [
                 Text(
-                  "Welcome to the Traveling Tropy Contest!",
+                  "Welcome to the Traveling Tropy!",
                   style: _textStyle,
                 ),
-                const SizedBox(height: 10),
-                const Text("Please enter your entry passphrase here!"),
+                Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Image(
+                    image: AssetImage("assets/icon/icon.png"),
+                    width: 150,
+                  ),
+                ),
+                const Text("Please enter your entry passphrase."),
                 const SizedBox(height: 100),
                 Form(
                   key: _formKey,
