@@ -220,8 +220,6 @@ class TeamColumn extends StatefulWidget {
 }
 
 class _TeamColumnState extends State<TeamColumn> {
-  final _textStyle = const TextStyle(fontWeight: FontWeight.bold, fontSize: 20);
-
   @override
   Widget build(BuildContext context) {
     if (Data.regionEast.teams.length == 0) {
@@ -280,20 +278,34 @@ class _TeamColumnState extends State<TeamColumn> {
       },
     ).toList();
     List<Widget> totalList = [];
-    totalList.add(Text(
-      widget.regionTop.name,
-      style: _textStyle,
-    ));
+    totalList.add(RegionNameBar(region: widget.regionTop));
     totalList.addAll(topList);
-    totalList.add(Text(
-      widget.regionBottom.name,
-      style: _textStyle,
-    ));
+    totalList.add(RegionNameBar(region: widget.regionBottom));
     totalList.addAll(bottomList);
 
     return Column(
       children: totalList,
     );
+  }
+}
+
+class RegionNameBar extends StatelessWidget {
+  final _textStyle = const TextStyle(fontWeight: FontWeight.bold, fontSize: 20);
+  final Region region;
+  const RegionNameBar({super.key, required this.region});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+        width: 250.0,
+        child: DecoratedBox(
+          decoration: const BoxDecoration(color: Colors.orange),
+          child: Text(
+            region.name,
+            style: _textStyle,
+            textAlign: TextAlign.center,
+          ),
+        ));
   }
 }
 

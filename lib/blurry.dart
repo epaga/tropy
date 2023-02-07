@@ -28,6 +28,7 @@ class _BlurryDialogState extends State<BlurryDialog> {
   _BlurryDialogState(this.title, this.content, this.continueCallBack,
       this.justMsg, this.showForm);
   TextStyle textStyle = TextStyle(color: Colors.black);
+  final _privStyle = const TextStyle(color: Colors.grey, fontSize: 10);
 
   @override
   Widget build(BuildContext context) {
@@ -98,6 +99,13 @@ class _BlurryDialogState extends State<BlurryDialog> {
                     icon: Icon(Icons.email),
                   ),
                 ),
+                Padding(
+                  padding: EdgeInsets.all(32.0),
+                  child: Text(
+                    "Note: Your data will not be passed on to any third party, it will only be used for keeping track of your contest entry!",
+                    style: _privStyle,
+                  ),
+                ),
               ],
             ),
           ),
@@ -131,12 +139,18 @@ class _BlurryDialogState extends State<BlurryDialog> {
                         continueCallBack();
                       }
                     },
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.orange,
+                    ),
                   ),
                   TextButton(
                     child: Text("Not Yet"),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.black,
+                    ),
                   ),
                 ],
         ));

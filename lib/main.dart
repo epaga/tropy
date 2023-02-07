@@ -105,8 +105,6 @@ class _MyAppState extends State<MyApp> {
                 height: 500,
                 child: Container(
                     padding: const EdgeInsets.all(15.0),
-                    decoration:
-                        BoxDecoration(border: Border.all(color: Colors.black)),
                     child: Column(
                       children: [
                         Text(
@@ -141,7 +139,7 @@ class _MyAppState extends State<MyApp> {
               margin: const EdgeInsets.all(15.0),
               padding: const EdgeInsets.all(3.0),
               decoration:
-                  BoxDecoration(border: Border.all(color: Colors.black)),
+                  BoxDecoration(border: Border.all(color: Colors.transparent)),
               child: Row(
                 children: [
                   SizedBox(
@@ -358,7 +356,7 @@ class _MyAppState extends State<MyApp> {
         onPressed: () {
           _showDialog(context);
         },
-        backgroundColor: Data.haveAllPicks ? Colors.blue : Colors.grey,
+        backgroundColor: Data.haveAllPicks ? Colors.orange : Colors.grey,
         child: const Text("Submit"),
       );
     } else {
