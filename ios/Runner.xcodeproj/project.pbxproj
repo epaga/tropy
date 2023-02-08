@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -113,7 +113,6 @@
 				6D03EBF46923896747E9FB19 /* Pods-Runner.release.xcconfig */,
 				57AC7A1BE66AAA85F69A4360 /* Pods-Runner.profile.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -359,11 +358,14 @@
 				DEVELOPMENT_TEAM = XAHCV8RVGN;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Traveling Tropy";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.epaga.tropy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -489,11 +491,14 @@
 				DEVELOPMENT_TEAM = XAHCV8RVGN;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Traveling Tropy";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.epaga.tropy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -513,11 +518,14 @@
 				DEVELOPMENT_TEAM = XAHCV8RVGN;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Traveling Tropy";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.epaga.tropy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";

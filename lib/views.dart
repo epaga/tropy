@@ -434,7 +434,7 @@ class InitialPasswordScreenState extends State<InitialPasswordScreen> {
                   "Welcome to the Traveling Tropy!",
                   style: _textStyle,
                 ),
-                Padding(
+                const Padding(
                   padding: EdgeInsets.all(20),
                   child: Image(
                     image: AssetImage("assets/icon/icon.png"),
@@ -454,8 +454,11 @@ class InitialPasswordScreenState extends State<InitialPasswordScreen> {
                       labelText: 'Password',
                     ),
                     validator: (String? value) {
-                      if (value != "rockchalk") {
+                      if (value != "tropytime" && value != "appreviewtestpw") {
                         return "Wrong password!";
+                      }
+                      if (value == "appreviewtestpw") {
+                        Data.appstoretest = true;
                       }
                       return null;
                     },

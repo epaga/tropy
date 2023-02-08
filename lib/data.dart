@@ -31,6 +31,7 @@ class Data {
   static FinalPicks finalPicks = FinalPicks();
 
   static bool clearPrefsAtStart = true;
+  static bool appstoretest = false;
 
   static void storeToDisk() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

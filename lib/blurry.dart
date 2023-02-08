@@ -22,6 +22,11 @@ class _BlurryDialogState extends State<BlurryDialog> {
   _BlurryDialogState();
   TextStyle textStyle = const TextStyle(color: Colors.black);
   final _privStyle = const TextStyle(color: Colors.grey, fontSize: 10);
+  final _nameFocus = FocusNode();
+  final _cityFocus = FocusNode();
+  final _codeFocus = FocusNode();
+  final _countryFocus = FocusNode();
+  final _emailFocus = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -38,55 +43,63 @@ class _BlurryDialogState extends State<BlurryDialog> {
             child: Column(
               children: <Widget>[
                 TextFormField(
+                  focusNode: _nameFocus,
+                  onFieldSubmitted: (_) {
+                    FocusScope.of(context).requestFocus(_cityFocus);
+                  },
                   onSaved: (newValue) => {Data.submission.name = newValue!},
-                  autovalidateMode: AutovalidateMode.always,
-                  validator: (value) => value == null || value.length < 5
-                      ? 'Name required.'
-                      : null,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) => validateNotEmpty(value, _nameFocus),
                   decoration: const InputDecoration(
                     labelText: 'Real Name',
                     icon: Icon(Icons.account_box),
                   ),
                 ),
                 TextFormField(
+                  focusNode: _cityFocus,
+                  onFieldSubmitted: (_) {
+                    FocusScope.of(context).requestFocus(_codeFocus);
+                  },
                   onSaved: (newValue) =>
                       {Data.submission.cityState = newValue!},
-                  autovalidateMode: AutovalidateMode.always,
-                  validator: (value) => value == null || value.length < 3
-                      ? 'City required.'
-                      : null,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) => validateNotEmpty(value, _cityFocus),
                   decoration: const InputDecoration(
                     labelText: 'City, State',
                     icon: Icon(Icons.location_city),
                   ),
                 ),
                 TextFormField(
+                  focusNode: _codeFocus,
+                  onFieldSubmitted: (_) {
+                    FocusScope.of(context).requestFocus(_countryFocus);
+                  },
                   onSaved: (newValue) => {Data.submission.postal = newValue!},
-                  autovalidateMode: AutovalidateMode.always,
-                  validator: (value) => value == null || value.length < 5
-                      ? 'Postal Code required.'
-                      : null,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) => validateNotEmpty(value, _codeFocus),
                   decoration: const InputDecoration(
                     labelText: 'Postal Code',
                     icon: Icon(Icons.numbers),
                   ),
                 ),
                 TextFormField(
+                  focusNode: _countryFocus,
+                  onFieldSubmitted: (_) {
+                    FocusScope.of(context).requestFocus(_emailFocus);
+                  },
                   onSaved: (newValue) => {Data.submission.country = newValue!},
-                  validator: (value) => value == null || value.length < 5
-                      ? 'Country required.'
-                      : null,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) => validateNotEmpty(value, _countryFocus),
                   decoration: const InputDecoration(
                     labelText: 'Country',
                     icon: Icon(Icons.map),
                   ),
                 ),
                 TextFormField(
+                  focusNode: _emailFocus,
                   onSaved: (newValue) => {Data.submission.email = newValue!},
-                  autovalidateMode: AutovalidateMode.always,
-                  validator: (value) => value == null || value.length < 5
-                      ? 'Email required.'
-                      : null,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) => validateNotEmpty(value, _emailFocus),
                   decoration: const InputDecoration(
                     labelText: 'Email',
                     icon: Icon(Icons.email),
@@ -147,5 +160,14 @@ class _BlurryDialogState extends State<BlurryDialog> {
                   ),
                 ],
         ));
+  }
+
+  String? validateNotEmpty(String? value, FocusNode focus) {
+    if (value == null || value.length < 5) {
+      focus.requestFocus();
+      return 'Value required here.';
+    } else {
+      return null;
+    }
   }
 }

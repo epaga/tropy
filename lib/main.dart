@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'data.dart';
@@ -78,6 +79,9 @@ class _MyAppState extends State<MyApp> {
 
     var initialdatacsv =
         response.body; //rootBundle.loadString('assets/initialdata.csv');
+    if (Data.appstoretest) {
+      initialdatacsv = await rootBundle.loadString('assets/initialdata.csv');
+    }
     var list = const CsvToListConverter(eol: "\n").convert(initialdatacsv);
     if (list.isEmpty) {
       Data.notReadyYet = true;
