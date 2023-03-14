@@ -151,7 +151,7 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                       width: 250,
                       child: TeamColumn(
-                        regionTop: Data.regionWest,
+                        regionTop: Data.regionSouth,
                         regionBottom: Data.regionEast,
                         refresh: () => {setState(() {})},
                       )),
@@ -165,7 +165,7 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
-                          regionTop: Data.regionWest,
+                          regionTop: Data.regionSouth,
                           regionBottom: Data.regionEast,
                           refresh: () => {setState(() {})},
                           round: 1)),
@@ -179,7 +179,7 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
-                          regionTop: Data.regionWest,
+                          regionTop: Data.regionSouth,
                           regionBottom: Data.regionEast,
                           refresh: () => {setState(() {})},
                           round: 2)),
@@ -193,7 +193,7 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
-                          regionTop: Data.regionWest,
+                          regionTop: Data.regionSouth,
                           regionBottom: Data.regionEast,
                           refresh: () => {setState(() {})},
                           round: 3)),
@@ -207,7 +207,7 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
-                          regionTop: Data.regionWest,
+                          regionTop: Data.regionSouth,
                           regionBottom: Data.regionEast,
                           refresh: () => {setState(() {})},
                           round: 4)),
@@ -286,8 +286,8 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionMidWest,
+                          regionTop: Data.regionMidWest,
+                          regionBottom: Data.regionWest,
                           refresh: () => {setState(() {})},
                           round: 4)),
                   SizedBox(
@@ -300,8 +300,8 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionMidWest,
+                          regionTop: Data.regionMidWest,
+                          regionBottom: Data.regionWest,
                           refresh: () => {setState(() {})},
                           round: 3)),
                   SizedBox(
@@ -314,8 +314,8 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionMidWest,
+                          regionTop: Data.regionMidWest,
+                          regionBottom: Data.regionWest,
                           refresh: () => {setState(() {})},
                           round: 2)),
                   SizedBox(
@@ -328,8 +328,8 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionMidWest,
+                          regionTop: Data.regionMidWest,
+                          regionBottom: Data.regionWest,
                           refresh: () => {setState(() {})},
                           round: 1)),
                   SizedBox(
@@ -342,8 +342,8 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                       width: 250,
                       child: TeamColumn(
-                        regionTop: Data.regionSouth,
-                        regionBottom: Data.regionMidWest,
+                        regionTop: Data.regionMidWest,
+                        regionBottom: Data.regionWest,
                         refresh: () => {setState(() {})},
                       )),
                 ],
@@ -530,10 +530,12 @@ class Region {
       i++;
     }
   }
+// south <-> midwest
+// east <-> west
 
   pick(round, team) {
     if (round == 4) {
-      if (name == Data.regionWest.name || name == Data.regionEast.name) {
+      if (name == Data.regionSouth.name || name == Data.regionEast.name) {
         removePicksOfTeamAfter(round, Data.finalPicks.teamLeft);
         Data.finalPicks.teamLeft = team;
       } else {

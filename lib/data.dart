@@ -19,7 +19,8 @@ class Data {
 
   static bool haveAllPicks = false;
   static bool submittedPicks = true;
-
+// south <-> midwest
+// east <-> west
   static Region regionWest = Region(teams: [], name: "", picks: []);
   static Region regionEast = Region(teams: [], name: "", picks: []);
   static Region regionSouth = Region(teams: [], name: "", picks: []);
@@ -30,7 +31,7 @@ class Data {
 
   static FinalPicks finalPicks = FinalPicks();
 
-  static bool clearPrefsAtStart = true;
+  static bool clearPrefsAtStart = false;
   static bool appstoretest = false;
 
   static void storeToDisk() async {

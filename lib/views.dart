@@ -137,7 +137,7 @@ class _RoundColumnState extends State<RoundColumn> {
           child: TeamBoxItem(
               teamName: e?.name ?? "",
               teamImageName: e?.imageName ?? "",
-              seed: -1));
+              seed: e?.seed ?? -1));
     }).toList();
     var bottomPicks = widget.regionBottom.picks[widget.round - 1];
     var bottomList = bottomPicks.map((e) {
@@ -155,7 +155,7 @@ class _RoundColumnState extends State<RoundColumn> {
           child: TeamBoxItem(
               teamName: e?.name ?? "",
               teamImageName: e?.imageName ?? "",
-              seed: -1));
+              seed: e?.seed ?? -1));
     }).toList();
     final double spaceTop = widget.round == 1
         ? 20
