@@ -151,8 +151,8 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                       width: 250,
                       child: TeamColumn(
-                        regionTop: Data.regionSouth,
-                        regionBottom: Data.regionEast,
+                        regionTop: Data.regionEast,
+                        regionBottom: Data.regionWest,
                         refresh: () => {setState(() {})},
                       )),
                   SizedBox(
@@ -165,8 +165,8 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionEast,
+                          regionTop: Data.regionEast,
+                          regionBottom: Data.regionWest,
                           refresh: () => {setState(() {})},
                           round: 1)),
                   SizedBox(
@@ -179,8 +179,8 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionEast,
+                          regionTop: Data.regionEast,
+                          regionBottom: Data.regionWest,
                           refresh: () => {setState(() {})},
                           round: 2)),
                   SizedBox(
@@ -193,8 +193,8 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionEast,
+                          regionTop: Data.regionEast,
+                          regionBottom: Data.regionWest,
                           refresh: () => {setState(() {})},
                           round: 3)),
                   SizedBox(
@@ -207,8 +207,8 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionEast,
+                          regionTop: Data.regionEast,
+                          regionBottom: Data.regionWest,
                           refresh: () => {setState(() {})},
                           round: 4)),
                   SizedBox(
@@ -286,8 +286,8 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
-                          regionTop: Data.regionMidWest,
-                          regionBottom: Data.regionWest,
+                          regionTop: Data.regionSouth,
+                          regionBottom: Data.regionMidWest,
                           refresh: () => {setState(() {})},
                           round: 4)),
                   SizedBox(
@@ -300,8 +300,8 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
-                          regionTop: Data.regionMidWest,
-                          regionBottom: Data.regionWest,
+                          regionTop: Data.regionSouth,
+                          regionBottom: Data.regionMidWest,
                           refresh: () => {setState(() {})},
                           round: 3)),
                   SizedBox(
@@ -314,8 +314,8 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
-                          regionTop: Data.regionMidWest,
-                          regionBottom: Data.regionWest,
+                          regionTop: Data.regionSouth,
+                          regionBottom: Data.regionMidWest,
                           refresh: () => {setState(() {})},
                           round: 2)),
                   SizedBox(
@@ -328,8 +328,8 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                       width: 250,
                       child: RoundColumn(
-                          regionTop: Data.regionMidWest,
-                          regionBottom: Data.regionWest,
+                          regionTop: Data.regionSouth,
+                          regionBottom: Data.regionMidWest,
                           refresh: () => {setState(() {})},
                           round: 1)),
                   SizedBox(
@@ -342,8 +342,8 @@ class _MyAppState extends State<MyApp> {
                   SizedBox(
                       width: 250,
                       child: TeamColumn(
-                        regionTop: Data.regionMidWest,
-                        regionBottom: Data.regionWest,
+                        regionTop: Data.regionSouth,
+                        regionBottom: Data.regionMidWest,
                         refresh: () => {setState(() {})},
                       )),
                 ],
@@ -373,7 +373,7 @@ class _MyAppState extends State<MyApp> {
   _createTropyEntry(String postData) async {
     final response = await http.post(
       Uri.parse(
-          'https://docs.google.com/forms/u/0/d/e/1FAIpQLSeHIv1kfLZa0mhsEFiPfp6M4hDUn-bVGFwqKgRncTG5IH7Dcg/formResponse'),
+          'https://docs.google.com/forms/u/0/d/e/1FAIpQLSd4HNCqNPtVuCtl52nHXkOWYGJ1PsbfW9_cyEr5TMBg-_iVrA/formResponse'),
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
       },
@@ -406,28 +406,27 @@ class _MyAppState extends State<MyApp> {
     Navigator.of(context).pop();
     if (ready) {
       /*
-      entry.1605530316 // first name
-      entry.1938482540 // last name
-      entry.580760508 // city/state
-      entry.1605013589 // postal
-      entry.470103823 // country
-      entry.2137142274 // email
-      entry.795823503 // picks
-      */
+entry.129362557: FirstName
+entry.1430700886: LastName
+entry.547710129: City
+entry.976623211: Postal
+entry.337915264: Country
+entry.1737913929: Email
+entry.650515796: Picks      */
       // ignore: prefer_interpolation_to_compose_strings
-      var postData = "entry.1605530316=" +
+      var postData = "entry.129362557=" +
           Uri.encodeFull(Data.submission.firstName()) +
-          "&entry.1938482540=" +
+          "&entry.1430700886=" +
           Uri.encodeFull(Data.submission.lastName()) +
-          "&entry.580760508=" +
+          "&entry.547710129=" +
           Uri.encodeFull(Data.submission.cityState) +
-          "&entry.1605013589=" +
+          "&entry.976623211=" +
           Uri.encodeFull(Data.submission.postal) +
-          "&entry.470103823=" +
+          "&entry.337915264=" +
           Uri.encodeFull(Data.submission.country) +
-          "&entry.2137142274=" +
+          "&entry.1737913929=" +
           Uri.encodeFull(Data.submission.email) +
-          "&entry.795823503=" +
+          "&entry.650515796=" +
           Uri.encodeFull(Data.picks());
       _createTropyEntry(postData);
     }
@@ -535,7 +534,7 @@ class Region {
 
   pick(round, team) {
     if (round == 4) {
-      if (name == Data.regionSouth.name || name == Data.regionEast.name) {
+      if (name == Data.regionEast.name || name == Data.regionWest.name) {
         removePicksOfTeamAfter(round, Data.finalPicks.teamLeft);
         Data.finalPicks.teamLeft = team;
       } else {
