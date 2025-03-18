@@ -1,2 +1,2 @@
-/bin/sh
+#!/bin/sh
 flutter build apk --release

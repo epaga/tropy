@@ -17,10 +17,7 @@ import 'blurry.dart';
 part 'main.g.dart';
 
 void main() async {
-  runApp(const MaterialApp(
-    home: MyApp(),
-    debugShowCheckedModeBanner: false,
-  ));
+  runApp(const MaterialApp(home: MyApp(), debugShowCheckedModeBanner: false));
 }
 
 class MyApp extends StatefulWidget {
@@ -40,10 +37,12 @@ class _MyAppState extends State<MyApp> {
     Data.submittedPicks = prefs.getBool("submittedPicks") ?? false;
     if (Data.submittedPicks) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          duration: Duration(seconds: 5),
-          content: Text("You already submitted your entry! Good luck!"),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            duration: Duration(seconds: 5),
+            content: Text("You already submitted your entry! Good luck!"),
+          ),
+        );
       }
     }
 
@@ -57,16 +56,21 @@ class _MyAppState extends State<MyApp> {
       Data.needPassword = false;
       var regionWestJson = prefs.getString('regionWest');
       if (regionWestJson != null) {
-        Data.regionWest =
-            Region.fromJson(jsonDecode(prefs.getString('regionWest')!));
-        Data.regionEast =
-            Region.fromJson(jsonDecode(prefs.getString('regionEast')!));
-        Data.regionMidWest =
-            Region.fromJson(jsonDecode(prefs.getString('regionMidwest')!));
-        Data.regionSouth =
-            Region.fromJson(jsonDecode(prefs.getString('regionSouth')!));
-        Data.finalPicks =
-            FinalPicks.fromJson(jsonDecode(prefs.getString('finalPicks')!));
+        Data.regionWest = Region.fromJson(
+          jsonDecode(prefs.getString('regionWest')!),
+        );
+        Data.regionEast = Region.fromJson(
+          jsonDecode(prefs.getString('regionEast')!),
+        );
+        Data.regionMidWest = Region.fromJson(
+          jsonDecode(prefs.getString('regionMidwest')!),
+        );
+        Data.regionSouth = Region.fromJson(
+          jsonDecode(prefs.getString('regionSouth')!),
+        );
+        Data.finalPicks = FinalPicks.fromJson(
+          jsonDecode(prefs.getString('finalPicks')!),
+        );
         Data.notReadyYet = false;
         Data.updateWhetherWeHaveAllPicks();
         setState(() {});
@@ -106,22 +110,23 @@ class _MyAppState extends State<MyApp> {
       }
       return Scaffold(
         body: Center(
-            child: SizedBox(
-                width: 500,
-                height: 500,
-                child: Container(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Column(
-                      children: [
-                        Text(
-                          "Not ready yet!",
-                          style: _textStyle,
-                        ),
-                        const SizedBox(height: 10),
-                        const Text(
-                            "We're going to need to wait until the teams are picked.")
-                      ],
-                    )))),
+          child: SizedBox(
+            width: 500,
+            height: 500,
+            child: Container(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                children: [
+                  Text("Not ready yet!", style: _textStyle),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "We're going to need to wait until the teams are picked.",
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Data.csvUrl = 'https://smoothtrack.app/tropy/initialdata.csv';
@@ -144,17 +149,19 @@ class _MyAppState extends State<MyApp> {
             child: Container(
               margin: const EdgeInsets.all(15.0),
               padding: const EdgeInsets.all(3.0),
-              decoration:
-                  BoxDecoration(border: Border.all(color: Colors.transparent)),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.transparent),
+              ),
               child: Row(
                 children: [
                   SizedBox(
-                      width: 250,
-                      child: TeamColumn(
-                        regionTop: Data.regionEast,
-                        regionBottom: Data.regionWest,
-                        refresh: () => {setState(() {})},
-                      )),
+                    width: 250,
+                    child: TeamColumn(
+                      regionTop: Data.regionSouth,
+                      regionBottom: Data.regionWest,
+                      refresh: () => {setState(() {})},
+                    ),
+                  ),
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
@@ -163,12 +170,14 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   SizedBox(
-                      width: 250,
-                      child: RoundColumn(
-                          regionTop: Data.regionEast,
-                          regionBottom: Data.regionWest,
-                          refresh: () => {setState(() {})},
-                          round: 1)),
+                    width: 250,
+                    child: RoundColumn(
+                      regionTop: Data.regionSouth,
+                      regionBottom: Data.regionWest,
+                      refresh: () => {setState(() {})},
+                      round: 1,
+                    ),
+                  ),
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
@@ -177,12 +186,14 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   SizedBox(
-                      width: 250,
-                      child: RoundColumn(
-                          regionTop: Data.regionEast,
-                          regionBottom: Data.regionWest,
-                          refresh: () => {setState(() {})},
-                          round: 2)),
+                    width: 250,
+                    child: RoundColumn(
+                      regionTop: Data.regionSouth,
+                      regionBottom: Data.regionWest,
+                      refresh: () => {setState(() {})},
+                      round: 2,
+                    ),
+                  ),
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
@@ -191,12 +202,14 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   SizedBox(
-                      width: 250,
-                      child: RoundColumn(
-                          regionTop: Data.regionEast,
-                          regionBottom: Data.regionWest,
-                          refresh: () => {setState(() {})},
-                          round: 3)),
+                    width: 250,
+                    child: RoundColumn(
+                      regionTop: Data.regionSouth,
+                      regionBottom: Data.regionWest,
+                      refresh: () => {setState(() {})},
+                      round: 3,
+                    ),
+                  ),
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
@@ -205,12 +218,14 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   SizedBox(
-                      width: 250,
-                      child: RoundColumn(
-                          regionTop: Data.regionEast,
-                          regionBottom: Data.regionWest,
-                          refresh: () => {setState(() {})},
-                          round: 4)),
+                    width: 250,
+                    child: RoundColumn(
+                      regionTop: Data.regionSouth,
+                      regionBottom: Data.regionWest,
+                      refresh: () => {setState(() {})},
+                      round: 4,
+                    ),
+                  ),
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
@@ -219,24 +234,27 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   SizedBox(
-                      width: 250,
-                      child: GestureDetector(
-                          // When the child is tapped, show a snackbar.
-                          onTap: () {
-                            setState(() {
-                              if (Data.submittedPicks) {
-                                return;
-                              }
-                              Data.finalPicks.champ = Data.finalPicks.teamLeft;
-                              Data.updateWhetherWeHaveAllPicks();
-                            });
-                          },
-                          // The custom button
-                          child: TeamBoxItem(
-                              teamName: Data.finalPicks.teamLeft?.name ?? "",
-                              teamImageName:
-                                  Data.finalPicks.teamLeft?.imageName ?? "",
-                              seed: Data.finalPicks.teamLeft?.seed ?? -1))),
+                    width: 250,
+                    child: GestureDetector(
+                      // When the child is tapped, show a snackbar.
+                      onTap: () {
+                        setState(() {
+                          if (Data.submittedPicks) {
+                            return;
+                          }
+                          Data.finalPicks.champ = Data.finalPicks.teamLeft;
+                          Data.updateWhetherWeHaveAllPicks();
+                        });
+                      },
+                      // The custom button
+                      child: TeamBoxItem(
+                        teamName: Data.finalPicks.teamLeft?.name ?? "",
+                        teamImageName:
+                            Data.finalPicks.teamLeft?.imageName ?? "",
+                        seed: Data.finalPicks.teamLeft?.seed ?? -1,
+                      ),
+                    ),
+                  ),
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
@@ -245,11 +263,13 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   SizedBox(
-                      width: 250,
-                      child: TeamBoxItem(
-                          teamName: Data.finalPicks.champ?.name ?? "",
-                          teamImageName: Data.finalPicks.champ?.imageName ?? "",
-                          seed: Data.finalPicks.champ?.seed ?? -1)),
+                    width: 250,
+                    child: TeamBoxItem(
+                      teamName: Data.finalPicks.champ?.name ?? "",
+                      teamImageName: Data.finalPicks.champ?.imageName ?? "",
+                      seed: Data.finalPicks.champ?.seed ?? -1,
+                    ),
+                  ),
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
@@ -258,24 +278,27 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   SizedBox(
-                      width: 250,
-                      child: GestureDetector(
-                          // When the child is tapped, show a snackbar.
-                          onTap: () {
-                            setState(() {
-                              if (Data.submittedPicks) {
-                                return;
-                              }
-                              Data.finalPicks.champ = Data.finalPicks.teamRight;
-                              Data.updateWhetherWeHaveAllPicks();
-                            });
-                          },
-                          // The custom button
-                          child: TeamBoxItem(
-                              teamName: Data.finalPicks.teamRight?.name ?? "",
-                              teamImageName:
-                                  Data.finalPicks.teamRight?.imageName ?? "",
-                              seed: Data.finalPicks.teamRight?.seed ?? -1))),
+                    width: 250,
+                    child: GestureDetector(
+                      // When the child is tapped, show a snackbar.
+                      onTap: () {
+                        setState(() {
+                          if (Data.submittedPicks) {
+                            return;
+                          }
+                          Data.finalPicks.champ = Data.finalPicks.teamRight;
+                          Data.updateWhetherWeHaveAllPicks();
+                        });
+                      },
+                      // The custom button
+                      child: TeamBoxItem(
+                        teamName: Data.finalPicks.teamRight?.name ?? "",
+                        teamImageName:
+                            Data.finalPicks.teamRight?.imageName ?? "",
+                        seed: Data.finalPicks.teamRight?.seed ?? -1,
+                      ),
+                    ),
+                  ),
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
@@ -284,12 +307,14 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   SizedBox(
-                      width: 250,
-                      child: RoundColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionMidWest,
-                          refresh: () => {setState(() {})},
-                          round: 4)),
+                    width: 250,
+                    child: RoundColumn(
+                      regionTop: Data.regionEast,
+                      regionBottom: Data.regionMidWest,
+                      refresh: () => {setState(() {})},
+                      round: 4,
+                    ),
+                  ),
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
@@ -298,12 +323,14 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   SizedBox(
-                      width: 250,
-                      child: RoundColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionMidWest,
-                          refresh: () => {setState(() {})},
-                          round: 3)),
+                    width: 250,
+                    child: RoundColumn(
+                      regionTop: Data.regionEast,
+                      regionBottom: Data.regionMidWest,
+                      refresh: () => {setState(() {})},
+                      round: 3,
+                    ),
+                  ),
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
@@ -312,12 +339,14 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   SizedBox(
-                      width: 250,
-                      child: RoundColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionMidWest,
-                          refresh: () => {setState(() {})},
-                          round: 2)),
+                    width: 250,
+                    child: RoundColumn(
+                      regionTop: Data.regionEast,
+                      regionBottom: Data.regionMidWest,
+                      refresh: () => {setState(() {})},
+                      round: 2,
+                    ),
+                  ),
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
@@ -326,12 +355,14 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   SizedBox(
-                      width: 250,
-                      child: RoundColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionMidWest,
-                          refresh: () => {setState(() {})},
-                          round: 1)),
+                    width: 250,
+                    child: RoundColumn(
+                      regionTop: Data.regionEast,
+                      regionBottom: Data.regionMidWest,
+                      refresh: () => {setState(() {})},
+                      round: 1,
+                    ),
+                  ),
                   SizedBox(
                     width: 40,
                     child: CustomPaint(
@@ -340,12 +371,13 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   SizedBox(
-                      width: 250,
-                      child: TeamColumn(
-                        regionTop: Data.regionSouth,
-                        regionBottom: Data.regionMidWest,
-                        refresh: () => {setState(() {})},
-                      )),
+                    width: 250,
+                    child: TeamColumn(
+                      regionTop: Data.regionEast,
+                      regionBottom: Data.regionMidWest,
+                      refresh: () => {setState(() {})},
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -373,7 +405,8 @@ class _MyAppState extends State<MyApp> {
   _createTropyEntry(String postData) async {
     final response = await http.post(
       Uri.parse(
-          'https://docs.google.com/forms/u/0/d/e/1FAIpQLSd4HNCqNPtVuCtl52nHXkOWYGJ1PsbfW9_cyEr5TMBg-_iVrA/formResponse'),
+        'https://docs.google.com/forms/u/0/d/e/1FAIpQLSd4HNCqNPtVuCtl52nHXkOWYGJ1PsbfW9_cyEr5TMBg-_iVrA/formResponse',
+      ),
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
       },
@@ -386,18 +419,23 @@ class _MyAppState extends State<MyApp> {
 
       setState(() {});
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          duration: Duration(seconds: 5),
-          content: Text("Successfully submitted! Good luck!"),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            duration: Duration(seconds: 5),
+            content: Text("Successfully submitted! Good luck!"),
+          ),
+        );
       }
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          duration: Duration(seconds: 5),
-          content: Text(
-              "Error: uh-oh, couldn't submit! Check your internet connection and try later..."),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            duration: Duration(seconds: 5),
+            content: Text(
+              "Error: uh-oh, couldn't submit! Check your internet connection and try later...",
+            ),
+          ),
+        );
       }
     }
   }
@@ -414,7 +452,8 @@ entry.337915264: Country
 entry.1737913929: Email
 entry.650515796: Picks      */
       // ignore: prefer_interpolation_to_compose_strings
-      var postData = "entry.129362557=" +
+      var postData =
+          "entry.129362557=" +
           Uri.encodeFull(Data.submission.firstName()) +
           "&entry.1430700886=" +
           Uri.encodeFull(Data.submission.lastName()) +
@@ -434,17 +473,16 @@ entry.650515796: Picks      */
 
   _showDialog(BuildContext context) {
     bool ready = Data.haveAllPicks;
-    continueCallBack() => {
-          _voidCallback(context, ready),
-        };
+    continueCallBack() => {_voidCallback(context, ready)};
     BlurryDialog alert = BlurryDialog(
-        ready ? "Ready to submit?" : "Can't submit yet",
-        ready
-            ? "Are you all ready to make your picks?"
-            : "You can't submit until you've made all your picks!",
-        continueCallBack,
-        !ready,
-        true);
+      ready ? "Ready to submit?" : "Can't submit yet",
+      ready
+          ? "Are you all ready to make your picks?"
+          : "You can't submit until you've made all your picks!",
+      continueCallBack,
+      !ready,
+      true,
+    );
 
     showDialog(
       context: context,
@@ -458,11 +496,12 @@ entry.650515796: Picks      */
 //------------- JSON structures
 @JsonSerializable()
 class Team {
-  Team(
-      {required this.name,
-      required this.seed,
-      required this.region,
-      required this.imageName});
+  Team({
+    required this.name,
+    required this.seed,
+    required this.region,
+    required this.imageName,
+  });
 
   final String name;
   final int seed;
@@ -492,12 +531,19 @@ class Region {
   Map<String, dynamic> toJson() => _$RegionToJson(this);
 
   teamBySeed(s) {
-    return teams.firstWhere((team) => team.seed == s);
+    try {
+      return teams.firstWhere((team) => team.seed == s);
+    } catch (e) {
+      print("Failed to find seed $s in region $name");
+      print("Available seeds in $name: ${teams.map((t) => t.seed).toList()}");
+      rethrow;
+    }
   }
 
   firstRoundPick(s) {
-    int index =
-        Data.pairings.indexWhere((element) => element.a == s || element.b == s);
+    int index = Data.pairings.indexWhere(
+      (element) => element.a == s || element.b == s,
+    );
     removePicksOfTeamAfter(0, picks[0][index]);
     picks[0][index] = teamBySeed(s);
     Data.updateWhetherWeHaveAllPicks();
@@ -529,12 +575,12 @@ class Region {
       i++;
     }
   }
-// south <-> midwest
-// east <-> west
+  // south <-> west
+  // east <-> midwest
 
   pick(round, team) {
     if (round == 4) {
-      if (name == Data.regionEast.name || name == Data.regionWest.name) {
+      if (name == Data.regionSouth.name || name == Data.regionWest.name) {
         removePicksOfTeamAfter(round, Data.finalPicks.teamLeft);
         Data.finalPicks.teamLeft = team;
       } else {
@@ -550,8 +596,9 @@ class Region {
   }
 
   bool haveAllPicks() {
-    var result =
-        picks.every((element) => element.every((pick) => pick != null));
+    var result = picks.every(
+      (element) => element.every((pick) => pick != null),
+    );
     return result;
   }
 

@@ -13,11 +13,12 @@ class TwoToOnePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // Create a Paint object.
-    Paint paint = Paint()
-      ..color = Colors.black
-      ..strokeWidth = 1.0
-      ..style = PaintingStyle.stroke
-      ..strokeJoin = StrokeJoin.round;
+    Paint paint =
+        Paint()
+          ..color = Colors.black
+          ..strokeWidth = 1.0
+          ..style = PaintingStyle.stroke
+          ..strokeJoin = StrokeJoin.round;
 
     // Set the color of the paint to blue.
     paint.color = Colors.blue;
@@ -67,8 +68,14 @@ class TwoToOnePainter extends CustomPainter {
     }
   }
 
-  void drawTwoToOne(Canvas canvas, Paint paint, double x, double y,
-      double height, bool backwards) {
+  void drawTwoToOne(
+    Canvas canvas,
+    Paint paint,
+    double x,
+    double y,
+    double height,
+    bool backwards,
+  ) {
     if (backwards) {
       var path = Path();
       path.moveTo(x + 40, y + 50);
@@ -97,12 +104,13 @@ class TwoToOnePainter extends CustomPainter {
 }
 
 class RoundColumn extends StatefulWidget {
-  const RoundColumn(
-      {required this.regionTop,
-      required this.regionBottom,
-      required this.round,
-      required this.refresh,
-      super.key});
+  const RoundColumn({
+    required this.regionTop,
+    required this.regionBottom,
+    required this.round,
+    required this.refresh,
+    super.key,
+  });
 
   final Region regionTop;
   final Region regionBottom;
@@ -122,94 +130,98 @@ class _RoundColumnState extends State<RoundColumn> {
       return const Text("");
     }
     var picks = widget.regionTop.picks[widget.round - 1];
-    var topList = picks.map((e) {
-      return GestureDetector(
-          // When the child is tapped, show a snackbar.
-          onTap: () {
-            if (Data.submittedPicks) {
-              return;
-            }
-            widget.regionTop.pick(widget.round, e);
-            widget.refresh();
-            setState(() {});
-          },
-          // The custom button
-          child: TeamBoxItem(
+    var topList =
+        picks.map((e) {
+          return GestureDetector(
+            // When the child is tapped, show a snackbar.
+            onTap: () {
+              if (Data.submittedPicks) {
+                return;
+              }
+              widget.regionTop.pick(widget.round, e);
+              widget.refresh();
+              setState(() {});
+            },
+            // The custom button
+            child: TeamBoxItem(
               teamName: e?.name ?? "",
               teamImageName: e?.imageName ?? "",
-              seed: e?.seed ?? -1));
-    }).toList();
+              seed: e?.seed ?? -1,
+            ),
+          );
+        }).toList();
     var bottomPicks = widget.regionBottom.picks[widget.round - 1];
-    var bottomList = bottomPicks.map((e) {
-      return GestureDetector(
-          // When the child is tapped, show a snackbar.
-          onTap: () {
-            if (Data.submittedPicks) {
-              return;
-            }
-            widget.regionBottom.pick(widget.round, e);
-            widget.refresh();
-            setState(() {});
-          },
-          // The custom button
-          child: TeamBoxItem(
+    var bottomList =
+        bottomPicks.map((e) {
+          return GestureDetector(
+            // When the child is tapped, show a snackbar.
+            onTap: () {
+              if (Data.submittedPicks) {
+                return;
+              }
+              widget.regionBottom.pick(widget.round, e);
+              widget.refresh();
+              setState(() {});
+            },
+            // The custom button
+            child: TeamBoxItem(
               teamName: e?.name ?? "",
               teamImageName: e?.imageName ?? "",
-              seed: e?.seed ?? -1));
-    }).toList();
-    final double spaceTop = widget.round == 1
-        ? 20
-        : widget.round == 2
+              seed: e?.seed ?? -1,
+            ),
+          );
+        }).toList();
+    final double spaceTop =
+        widget.round == 1
+            ? 20
+            : widget.round == 2
             ? 68
             : widget.round == 3
-                ? 163
-                : 350;
-    final double spaceInBetween = widget.round == 1
-        ? 50
-        : widget.round == 2
+            ? 163
+            : 350;
+    final double spaceInBetween =
+        widget.round == 1
+            ? 50
+            : widget.round == 2
             ? 144
             : widget.round == 3
-                ? 330
-                : 700;
+            ? 330
+            : 700;
     List<Widget> totalList = [];
-    totalList.add(Container(
+    totalList.add(
+      Container(
         margin: const EdgeInsets.fromLTRB(0, 0, 0, 3),
-        child: Text("", style: _textStyle)));
-    totalList.add(SizedBox(
-      width: 0,
-      height: spaceTop,
-    ));
+        child: Text("", style: _textStyle),
+      ),
+    );
+    totalList.add(SizedBox(width: 0, height: spaceTop));
     for (var element in topList) {
       totalList.add(element);
-      totalList.add(SizedBox(
-        width: 0,
-        height: spaceInBetween,
-      ));
+      totalList.add(SizedBox(width: 0, height: spaceInBetween));
     }
-    totalList.add(Container(
+    totalList.add(
+      Container(
         margin: const EdgeInsets.fromLTRB(0, 0, 0, 3),
-        child: Text("", style: _textStyle)));
-//    totalList.addAll(topList);
+        child: Text("", style: _textStyle),
+      ),
+    );
+    //    totalList.addAll(topList);
     for (var element in bottomList) {
       totalList.add(element);
-      totalList.add(SizedBox(
-        width: 0,
-        height: spaceInBetween,
-      ));
+      totalList.add(SizedBox(width: 0, height: spaceInBetween));
     }
     totalList.removeLast();
-    return Column(
-      children: totalList,
-    );
+    return Column(children: totalList);
   }
 }
 
 class TeamColumn extends StatefulWidget {
-  const TeamColumn(
-      {required this.regionTop,
-      required this.regionBottom,
-      required this.refresh,
-      super.key});
+  const TeamColumn({
+    required this.regionTop,
+    required this.regionBottom,
+    required this.refresh,
+    super.key,
+  });
 
   final Region regionTop;
   final Region regionBottom;
@@ -225,67 +237,67 @@ class _TeamColumnState extends State<TeamColumn> {
     if (Data.regionEast.teams.isEmpty) {
       return const Text("");
     }
-    List<Widget> topList = Data.pairings.map(
-      (e) {
-        return PairingItem(
-          t1: widget.regionTop.teamBySeed(e.a),
-          t2: widget.regionTop.teamBySeed(e.b),
-          tapped: () => {
-            setState(() {
-              if (Data.submittedPicks) {
-                return;
-              }
-              widget.regionTop.firstRoundPick(e.a);
-              widget.refresh();
-            })
-          },
-          tapped2: () => {
-            setState(() {
-              if (Data.submittedPicks) {
-                return;
-              }
-              widget.regionTop.firstRoundPick(e.b);
-              widget.refresh();
-            })
-          },
-        );
-      },
-    ).toList();
-    List<Widget> bottomList = Data.pairings.map(
-      (e) {
-        return PairingItem(
-          t1: widget.regionBottom.teamBySeed(e.a),
-          t2: widget.regionBottom.teamBySeed(e.b),
-          tapped: () => {
-            setState(() {
-              if (Data.submittedPicks) {
-                return;
-              }
-              widget.regionBottom.firstRoundPick(e.a);
-              widget.refresh();
-            })
-          },
-          tapped2: () => {
-            setState(() {
-              if (Data.submittedPicks) {
-                return;
-              }
-              widget.regionBottom.firstRoundPick(e.b);
-              widget.refresh();
-            })
-          },
-        );
-      },
-    ).toList();
+    List<Widget> topList =
+        Data.pairings.map((e) {
+          return PairingItem(
+            t1: widget.regionTop.teamBySeed(e.a),
+            t2: widget.regionTop.teamBySeed(e.b),
+            tapped:
+                () => {
+                  setState(() {
+                    if (Data.submittedPicks) {
+                      return;
+                    }
+                    widget.regionTop.firstRoundPick(e.a);
+                    widget.refresh();
+                  }),
+                },
+            tapped2:
+                () => {
+                  setState(() {
+                    if (Data.submittedPicks) {
+                      return;
+                    }
+                    widget.regionTop.firstRoundPick(e.b);
+                    widget.refresh();
+                  }),
+                },
+          );
+        }).toList();
+    List<Widget> bottomList =
+        Data.pairings.map((e) {
+          return PairingItem(
+            t1: widget.regionBottom.teamBySeed(e.a),
+            t2: widget.regionBottom.teamBySeed(e.b),
+            tapped:
+                () => {
+                  setState(() {
+                    if (Data.submittedPicks) {
+                      return;
+                    }
+                    widget.regionBottom.firstRoundPick(e.a);
+                    widget.refresh();
+                  }),
+                },
+            tapped2:
+                () => {
+                  setState(() {
+                    if (Data.submittedPicks) {
+                      return;
+                    }
+                    widget.regionBottom.firstRoundPick(e.b);
+                    widget.refresh();
+                  }),
+                },
+          );
+        }).toList();
     List<Widget> totalList = [];
     totalList.add(RegionNameBar(region: widget.regionTop));
     totalList.addAll(topList);
     totalList.add(RegionNameBar(region: widget.regionBottom));
     totalList.addAll(bottomList);
 
-    return Column(
-      children: totalList,
-    );
+    return Column(children: totalList);
   }
 }
 
@@ -297,25 +309,27 @@ class RegionNameBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        width: 250.0,
-        child: DecoratedBox(
-          decoration: const BoxDecoration(color: Colors.orange),
-          child: Text(
-            region.name,
-            style: _textStyle,
-            textAlign: TextAlign.center,
-          ),
-        ));
+      width: 250.0,
+      child: DecoratedBox(
+        decoration: const BoxDecoration(color: Colors.orange),
+        child: Text(
+          region.name,
+          style: _textStyle,
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
   }
 }
 
 class PairingItem extends StatelessWidget {
-  const PairingItem(
-      {required this.t1,
-      required this.t2,
-      required this.tapped,
-      required this.tapped2,
-      super.key});
+  const PairingItem({
+    required this.t1,
+    required this.t2,
+    required this.tapped,
+    required this.tapped2,
+    super.key,
+  });
 
   final Team t1;
   final Team t2;
@@ -329,19 +343,21 @@ class PairingItem extends StatelessWidget {
       child: Column(
         children: [
           GestureDetector(
-              // When the child is tapped, show a snackbar.
-              onTap: () {
-                tapped();
-              },
-              // The custom button
-              child: TeamBoxItem.fromTeam(t1)),
+            // When the child is tapped, show a snackbar.
+            onTap: () {
+              tapped();
+            },
+            // The custom button
+            child: TeamBoxItem.fromTeam(t1),
+          ),
           GestureDetector(
-              // When the child is tapped, show a snackbar.
-              onTap: () {
-                tapped2();
-              },
-              // The custom button
-              child: TeamBoxItem.fromTeam(t2)),
+            // When the child is tapped, show a snackbar.
+            onTap: () {
+              tapped2();
+            },
+            // The custom button
+            child: TeamBoxItem.fromTeam(t2),
+          ),
         ],
       ),
     );
@@ -349,14 +365,18 @@ class PairingItem extends StatelessWidget {
 }
 
 class TeamBoxItem extends StatelessWidget {
-  const TeamBoxItem(
-      {super.key,
-      required this.teamName,
-      required this.teamImageName,
-      required this.seed});
+  const TeamBoxItem({
+    super.key,
+    required this.teamName,
+    required this.teamImageName,
+    required this.seed,
+  });
   factory TeamBoxItem.fromTeam(Team team) {
     return TeamBoxItem(
-        teamName: team.name, teamImageName: team.imageName, seed: team.seed);
+      teamName: team.name,
+      teamImageName: team.imageName,
+      seed: team.seed,
+    );
   }
   final String teamImageName;
   final String teamName;
@@ -365,38 +385,38 @@ class TeamBoxItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget i = teamImageName == ""
-        ? const SizedBox(width: 30, height: 30)
-        : Image(
-            image: CachedNetworkImageProvider(
-                'https://smoothtrack.app/tropy/assets/$teamImageName'),
-            errorBuilder: (BuildContext context, Object exception,
-                StackTrace? stackTrace) {
-              return const SizedBox(width: 30, height: 30);
-            },
-            width: 30,
-            height: 30,
-          );
+    Widget i =
+        teamImageName == ""
+            ? const SizedBox(width: 30, height: 30)
+            : Image(
+              image: CachedNetworkImageProvider(
+                'https://smoothtrack.app/tropy/assets/$teamImageName',
+              ),
+              errorBuilder: (
+                BuildContext context,
+                Object exception,
+                StackTrace? stackTrace,
+              ) {
+                return const SizedBox(width: 30, height: 30);
+              },
+              width: 30,
+              height: 30,
+            );
 
     return Container(
-        margin: const EdgeInsets.fromLTRB(0, 3, 0, 3),
-        padding: const EdgeInsets.all(3),
-        decoration: BoxDecoration(border: Border.all(color: Colors.blueAccent)),
-        child: Row(
-          children: [
-            Text(
-              "${seed < 0 ? "" : seed}",
-              style: _textStyle,
-            ),
-            const Spacer(),
-            Text(
-              teamName,
-              style: _textStyle,
-            ),
-            const SizedBox(width: 10),
-            i
-          ],
-        ));
+      margin: const EdgeInsets.fromLTRB(0, 3, 0, 3),
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(border: Border.all(color: Colors.blueAccent)),
+      child: Row(
+        children: [
+          Text("${seed < 0 ? "" : seed}", style: _textStyle),
+          const Spacer(),
+          Text(teamName, style: _textStyle),
+          const SizedBox(width: 10),
+          i,
+        ],
+      ),
+    );
   }
 }
 
@@ -430,10 +450,7 @@ class InitialPasswordScreenState extends State<InitialPasswordScreen> {
             padding: const EdgeInsets.all(15.0),
             child: Column(
               children: [
-                Text(
-                  "Welcome to the Traveling Tropy!",
-                  style: _textStyle,
-                ),
+                Text("Welcome to the Traveling Tropy!", style: _textStyle),
                 const Padding(
                   padding: EdgeInsets.all(20),
                   child: Image(
@@ -446,13 +463,13 @@ class InitialPasswordScreenState extends State<InitialPasswordScreen> {
                 Form(
                   key: _formKey,
                   child: TextFormField(
-                    onFieldSubmitted: (value) => {
-                      if (_formKey.currentState!.validate()) {setPasswordSet()}
-                    },
+                    onFieldSubmitted:
+                        (value) => {
+                          if (_formKey.currentState!.validate())
+                            {setPasswordSet()},
+                        },
                     obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Password',
-                    ),
+                    decoration: const InputDecoration(labelText: 'Password'),
                     validator: (String? value) {
                       if (value != "tropytime" && value != "appreviewtestpw") {
                         return "Wrong password!";
