@@ -390,12 +390,27 @@ class _MyAppState extends State<MyApp> {
 
   Widget? _getFloatingButton() {
     if (!Data.submittedPicks) {
-      return FloatingActionButton(
-        onPressed: () {
-          _showDialog(context);
-        },
-        backgroundColor: Data.haveAllPicks ? Colors.orange : Colors.grey,
-        child: const Text("Submit"),
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton.extended(
+            heroTag: "reset",
+            onPressed: () {
+              _showResetDialog(context);
+            },
+            backgroundColor: Colors.red,
+            label: const Text("Reset"),
+          ),
+          const SizedBox(width: 12),
+          FloatingActionButton(
+            heroTag: "submit",
+            onPressed: () {
+              _showDialog(context);
+            },
+            backgroundColor: Data.haveAllPicks ? Colors.orange : Colors.grey,
+            child: const Text("Submit"),
+          ),
+        ],
       );
     } else {
       return null;
@@ -469,6 +484,35 @@ entry.650515796: Picks      */
           Uri.encodeFull(Data.picks());
       _createTropyEntry(postData);
     }
+  }
+
+  void _showResetDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Reset picks?"),
+          content: const Text("Are you sure? This cannot be undone."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Data.resetPicks();
+                setState(() {});
+              },
+              child: const Text("Reset everything"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   _showDialog(BuildContext context) {
