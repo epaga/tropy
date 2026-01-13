@@ -55,6 +55,28 @@ class Data {
         finalPicks.teamRight != null;
   }
 
+  static void resetPicks() {
+    regionWest = _resetRegion(regionWest);
+    regionEast = _resetRegion(regionEast);
+    regionSouth = _resetRegion(regionSouth);
+    regionMidWest = _resetRegion(regionMidWest);
+    finalPicks = FinalPicks();
+    updateWhetherWeHaveAllPicks();
+  }
+
+  static Region _resetRegion(Region region) {
+    return Region(
+      name: region.name,
+      teams: region.teams,
+      picks: [
+        List<Team?>.filled(8, null, growable: false),
+        List<Team?>.filled(4, null, growable: false),
+        List<Team?>.filled(2, null, growable: false),
+        List<Team?>.filled(1, null, growable: false),
+      ],
+    );
+  }
+
   static Submission submission = Submission();
 
   static String picks() {
