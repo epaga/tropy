@@ -14,13 +14,13 @@ class Data {
     Pair(6, 11),
     Pair(3, 14),
     Pair(7, 10),
-    Pair(2, 15)
+    Pair(2, 15),
   ];
 
   static bool haveAllPicks = false;
   static bool submittedPicks = true;
-// south <-> midwest
-// east <-> west
+  // south <-> midwest
+  // east <-> west
   static Region regionWest = Region(teams: [], name: "", picks: []);
   static Region regionEast = Region(teams: [], name: "", picks: []);
   static Region regionSouth = Region(teams: [], name: "", picks: []);
@@ -46,7 +46,8 @@ class Data {
   static void updateWhetherWeHaveAllPicks() {
     storeToDisk();
 
-    haveAllPicks = regionWest.haveAllPicks() &&
+    haveAllPicks =
+        regionWest.haveAllPicks() &&
         regionEast.haveAllPicks() &&
         regionSouth.haveAllPicks() &&
         regionMidWest.haveAllPicks() &&
@@ -164,16 +165,20 @@ class Submission {
 
 Region region(String regionName, List<List<dynamic>> list) {
   return Region(
-      name: regionName,
-      picks: [
-        [null, null, null, null, null, null, null, null],
-        [null, null, null, null],
-        [null, null],
-        [null]
-      ],
-      teams: list
-          .where((element) => element[2] == regionName)
-          .map((e) =>
-              Team(name: e[0], seed: e[1], region: e[2], imageName: e[3]))
-          .toList());
+    name: regionName,
+    picks: [
+      [null, null, null, null, null, null, null, null],
+      [null, null, null, null],
+      [null, null],
+      [null],
+    ],
+    teams:
+        list
+            .where((element) => element[2] == regionName)
+            .map(
+              (e) =>
+                  Team(name: e[0], seed: e[1], region: e[2], imageName: e[3]),
+            )
+            .toList(),
+  );
 }

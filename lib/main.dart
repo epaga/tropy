@@ -46,6 +46,8 @@ class _MyAppState extends State<MyApp> {
       }
     }
 
+    //prefs.setBool("stillNeedPassword", true);
+
     if (prefs.getBool("stillNeedPassword") ?? true) {
       // don't load any data: the user still needs to enter their initial password
       Data.notReadyYet = true;

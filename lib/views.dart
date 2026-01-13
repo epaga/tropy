@@ -3,6 +3,7 @@ import 'main.dart';
 import 'data.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class TwoToOnePainter extends CustomPainter {
   TwoToOnePainter(this.round, {this.backwards = false});
@@ -431,6 +432,28 @@ class InitialPasswordScreen extends StatefulWidget {
 class InitialPasswordScreenState extends State<InitialPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _textStyle = const TextStyle(fontWeight: FontWeight.bold, fontSize: 20);
+  bool _canAccessCsv = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkCsvAccess();
+  }
+
+  Future<void> _checkCsvAccess() async {
+    try {
+      final response = await http.get(
+        Uri.parse('https://smoothtrack.app/tropy/initialdata.csv'),
+      );
+      if (response.statusCode == 200) {
+        setState(() {
+          _canAccessCsv = true;
+        });
+      }
+    } catch (e) {
+      print('Error checking CSV access: $e');
+    }
+  }
 
   setPasswordSet() async {
     Data.needPassword = false;
@@ -442,49 +465,71 @@ class InitialPasswordScreenState extends State<InitialPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: SizedBox(
-          width: 500,
-          height: 500,
-          child: Container(
-            padding: const EdgeInsets.all(15.0),
-            child: Column(
-              children: [
-                Text("Welcome to the Traveling Tropy!", style: _textStyle),
-                const Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Image(
-                    image: AssetImage("assets/icon/icon.png"),
-                    width: 150,
-                  ),
-                ),
-                const Text("Please enter your entry passphrase."),
-                const SizedBox(height: 100),
-                Form(
-                  key: _formKey,
-                  child: TextFormField(
-                    onFieldSubmitted:
-                        (value) => {
-                          if (_formKey.currentState!.validate())
-                            {setPasswordSet()},
+      body: Stack(
+        children: [
+          Center(
+            child: SizedBox(
+              width: 500,
+              height: 500,
+              child: Container(
+                padding: const EdgeInsets.all(15.0),
+                child: Column(
+                  children: [
+                    Text("Welcome to the Traveling Tropy!", style: _textStyle),
+                    const Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Image(
+                        image: AssetImage("assets/icon/icon.png"),
+                        width: 150,
+                      ),
+                    ),
+                    const Text("Please enter your entry passphrase."),
+                    const SizedBox(height: 100),
+                    Form(
+                      key: _formKey,
+                      child: TextFormField(
+                        onFieldSubmitted:
+                            (value) => {
+                              if (_formKey.currentState!.validate())
+                                {setPasswordSet()},
+                            },
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          labelText: 'Password',
+                        ),
+                        validator: (String? value) {
+                          if (value != "tropytime" &&
+                              value != "appreviewtestpw") {
+                            return "Wrong password!";
+                          }
+                          if (value == "appreviewtestpw") {
+                            Data.appstoretest = true;
+                          }
+                          return null;
                         },
-                    obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Password'),
-                    validator: (String? value) {
-                      if (value != "tropytime" && value != "appreviewtestpw") {
-                        return "Wrong password!";
-                      }
-                      if (value == "appreviewtestpw") {
-                        Data.appstoretest = true;
-                      }
-                      return null;
-                    },
-                  ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
+          Positioned(
+            top: 20,
+            right: 20,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.7),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                'new build - can access csv: $_canAccessCsv',
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
