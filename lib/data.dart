@@ -33,6 +33,7 @@ class Data {
 
   static bool clearPrefsAtStart = false;
   static bool appstoretest = false;
+  static bool migrationDone = false;
 
   static void storeToDisk() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

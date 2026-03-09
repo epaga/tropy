@@ -13,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'data.dart';
 import 'views.dart';
 import 'blurry.dart';
+import 'standings_tab.dart';
 
 part 'main.g.dart';
 
@@ -27,9 +28,38 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  final ValueNotifier<int> _reloadStandingsNotifier = ValueNotifier<int>(0);
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _reloadStandingsNotifier.dispose();
+    super.dispose();
+  }
+
   loadInitialData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // One-time migration for 2026: clear old prefs exactly once before first
+    // 2026 fetch, so reloading during password setup does not clear again.
+    final hasFetched2026Data = prefs.getBool("fetched2026Data") ?? false;
+    final hasRun2026PrefReset = prefs.getBool("ran2026PrefReset") ?? false;
+    if (!hasFetched2026Data && !hasRun2026PrefReset) {
+      await prefs.clear();
+      await prefs.setBool("ran2026PrefReset", true);
+    }
+
     if (Data.clearPrefsAtStart) {
       await prefs.clear();
       Data.clearPrefsAtStart = false;
@@ -97,6 +127,8 @@ class _MyAppState extends State<MyApp> {
       Data.regionEast = region("East", list);
       Data.regionMidWest = region("MidWest", list);
       Data.regionSouth = region("South", list);
+      // Mark that we've successfully fetched the 2026 data so we don't reset again.
+      await prefs.setBool("fetched2026Data", true);
     }
     setState(() {});
   }
@@ -140,254 +172,289 @@ class _MyAppState extends State<MyApp> {
       );
     } else {
       return Scaffold(
-        body: InteractiveViewer(
-          constrained: false,
-          boundaryMargin: const EdgeInsets.all(20.0),
-          minScale: 0.01,
-          maxScale: 1,
-          child: SizedBox(
-            width: 3768,
-            height: 1600,
-            child: Container(
-              margin: const EdgeInsets.all(15.0),
-              padding: const EdgeInsets.all(3.0),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.transparent),
-              ),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 250,
-                    child: TeamColumn(
-                      regionTop: Data.regionSouth,
-                      regionBottom: Data.regionWest,
-                      refresh: () => {setState(() {})},
-                    ),
-                  ),
-                  SizedBox(
-                    width: 40,
-                    child: CustomPaint(
-                      size: const Size(40, 1600),
-                      painter: TwoToOnePainter(1),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 250,
-                    child: RoundColumn(
-                      regionTop: Data.regionSouth,
-                      regionBottom: Data.regionWest,
-                      refresh: () => {setState(() {})},
-                      round: 1,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 40,
-                    child: CustomPaint(
-                      size: const Size(40, 1600),
-                      painter: TwoToOnePainter(2),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 250,
-                    child: RoundColumn(
-                      regionTop: Data.regionSouth,
-                      regionBottom: Data.regionWest,
-                      refresh: () => {setState(() {})},
-                      round: 2,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 40,
-                    child: CustomPaint(
-                      size: const Size(40, 1600),
-                      painter: TwoToOnePainter(3),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 250,
-                    child: RoundColumn(
-                      regionTop: Data.regionSouth,
-                      regionBottom: Data.regionWest,
-                      refresh: () => {setState(() {})},
-                      round: 3,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 40,
-                    child: CustomPaint(
-                      size: const Size(40, 1600),
-                      painter: TwoToOnePainter(4),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 250,
-                    child: RoundColumn(
-                      regionTop: Data.regionSouth,
-                      regionBottom: Data.regionWest,
-                      refresh: () => {setState(() {})},
-                      round: 4,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 40,
-                    child: CustomPaint(
-                      size: const Size(40, 1600),
-                      painter: TwoToOnePainter(5),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 250,
-                    child: GestureDetector(
-                      // When the child is tapped, show a snackbar.
-                      onTap: () {
-                        setState(() {
-                          if (Data.submittedPicks) {
-                            return;
-                          }
-                          Data.finalPicks.champ = Data.finalPicks.teamLeft;
-                          Data.updateWhetherWeHaveAllPicks();
-                        });
-                      },
-                      // The custom button
-                      child: TeamBoxItem(
-                        teamName: Data.finalPicks.teamLeft?.name ?? "",
-                        teamImageName:
-                            Data.finalPicks.teamLeft?.imageName ?? "",
-                        seed: Data.finalPicks.teamLeft?.seed ?? -1,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 40,
-                    child: CustomPaint(
-                      size: const Size(40, 1600),
-                      painter: TwoToOnePainter(6, backwards: false),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 250,
-                    child: TeamBoxItem(
-                      teamName: Data.finalPicks.champ?.name ?? "",
-                      teamImageName: Data.finalPicks.champ?.imageName ?? "",
-                      seed: Data.finalPicks.champ?.seed ?? -1,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 40,
-                    child: CustomPaint(
-                      size: const Size(40, 1600),
-                      painter: TwoToOnePainter(6, backwards: true),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 250,
-                    child: GestureDetector(
-                      // When the child is tapped, show a snackbar.
-                      onTap: () {
-                        setState(() {
-                          if (Data.submittedPicks) {
-                            return;
-                          }
-                          Data.finalPicks.champ = Data.finalPicks.teamRight;
-                          Data.updateWhetherWeHaveAllPicks();
-                        });
-                      },
-                      // The custom button
-                      child: TeamBoxItem(
-                        teamName: Data.finalPicks.teamRight?.name ?? "",
-                        teamImageName:
-                            Data.finalPicks.teamRight?.imageName ?? "",
-                        seed: Data.finalPicks.teamRight?.seed ?? -1,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 40,
-                    child: CustomPaint(
-                      size: const Size(40, 1600),
-                      painter: TwoToOnePainter(5, backwards: true),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 250,
-                    child: RoundColumn(
-                      regionTop: Data.regionEast,
-                      regionBottom: Data.regionMidWest,
-                      refresh: () => {setState(() {})},
-                      round: 4,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 40,
-                    child: CustomPaint(
-                      size: const Size(40, 1600),
-                      painter: TwoToOnePainter(4, backwards: true),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 250,
-                    child: RoundColumn(
-                      regionTop: Data.regionEast,
-                      regionBottom: Data.regionMidWest,
-                      refresh: () => {setState(() {})},
-                      round: 3,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 40,
-                    child: CustomPaint(
-                      size: const Size(40, 1600),
-                      painter: TwoToOnePainter(3, backwards: true),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 250,
-                    child: RoundColumn(
-                      regionTop: Data.regionEast,
-                      regionBottom: Data.regionMidWest,
-                      refresh: () => {setState(() {})},
-                      round: 2,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 40,
-                    child: CustomPaint(
-                      size: const Size(40, 1600),
-                      painter: TwoToOnePainter(2, backwards: true),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 250,
-                    child: RoundColumn(
-                      regionTop: Data.regionEast,
-                      regionBottom: Data.regionMidWest,
-                      refresh: () => {setState(() {})},
-                      round: 1,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 40,
-                    child: CustomPaint(
-                      size: const Size(40, 1600),
-                      painter: TwoToOnePainter(1, backwards: true),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 250,
-                    child: TeamColumn(
-                      regionTop: Data.regionEast,
-                      regionBottom: Data.regionMidWest,
-                      refresh: () => {setState(() {})},
-                    ),
-                  ),
-                ],
-              ),
-            ),
+        appBar: AppBar(
+          toolbarHeight: 0,
+          bottom: TabBar(
+            controller: _tabController,
+            labelColor: Colors.blue,
+            unselectedLabelColor: Colors.grey,
+            tabs: const [Tab(text: "Picks"), Tab(text: "Standings")],
           ),
         ),
-        floatingActionButton: _getFloatingButton(),
+        body: TabBarView(
+          controller: _tabController,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            InteractiveViewer(
+              constrained: false,
+              boundaryMargin: const EdgeInsets.all(20.0),
+              minScale: 0.01,
+              maxScale: 1,
+              child: SizedBox(
+                width: 3768,
+                height: 1600,
+                child: Container(
+                  margin: const EdgeInsets.all(15.0),
+                  padding: const EdgeInsets.all(3.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.transparent),
+                  ),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 250,
+                        child: TeamColumn(
+                          regionTop: Data.regionSouth,
+                          regionBottom: Data.regionWest,
+                          refresh: () => {setState(() {})},
+                        ),
+                      ),
+                      SizedBox(
+                        width: 40,
+                        child: CustomPaint(
+                          size: const Size(40, 1600),
+                          painter: TwoToOnePainter(1),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 250,
+                        child: RoundColumn(
+                          regionTop: Data.regionSouth,
+                          regionBottom: Data.regionWest,
+                          refresh: () => {setState(() {})},
+                          round: 1,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 40,
+                        child: CustomPaint(
+                          size: const Size(40, 1600),
+                          painter: TwoToOnePainter(2),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 250,
+                        child: RoundColumn(
+                          regionTop: Data.regionSouth,
+                          regionBottom: Data.regionWest,
+                          refresh: () => {setState(() {})},
+                          round: 2,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 40,
+                        child: CustomPaint(
+                          size: const Size(40, 1600),
+                          painter: TwoToOnePainter(3),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 250,
+                        child: RoundColumn(
+                          regionTop: Data.regionSouth,
+                          regionBottom: Data.regionWest,
+                          refresh: () => {setState(() {})},
+                          round: 3,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 40,
+                        child: CustomPaint(
+                          size: const Size(40, 1600),
+                          painter: TwoToOnePainter(4),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 250,
+                        child: RoundColumn(
+                          regionTop: Data.regionSouth,
+                          regionBottom: Data.regionWest,
+                          refresh: () => {setState(() {})},
+                          round: 4,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 40,
+                        child: CustomPaint(
+                          size: const Size(40, 1600),
+                          painter: TwoToOnePainter(5),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 250,
+                        child: GestureDetector(
+                          // When the child is tapped, show a snackbar.
+                          onTap: () {
+                            setState(() {
+                              if (Data.submittedPicks) {
+                                return;
+                              }
+                              Data.finalPicks.champ = Data.finalPicks.teamLeft;
+                              Data.updateWhetherWeHaveAllPicks();
+                            });
+                          },
+                          // The custom button
+                          child: TeamBoxItem(
+                            teamName: Data.finalPicks.teamLeft?.name ?? "",
+                            teamImageName:
+                                Data.finalPicks.teamLeft?.imageName ?? "",
+                            seed: Data.finalPicks.teamLeft?.seed ?? -1,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 40,
+                        child: CustomPaint(
+                          size: const Size(40, 1600),
+                          painter: TwoToOnePainter(6, backwards: false),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 250,
+                        child: TeamBoxItem(
+                          teamName: Data.finalPicks.champ?.name ?? "",
+                          teamImageName: Data.finalPicks.champ?.imageName ?? "",
+                          seed: Data.finalPicks.champ?.seed ?? -1,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 40,
+                        child: CustomPaint(
+                          size: const Size(40, 1600),
+                          painter: TwoToOnePainter(6, backwards: true),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 250,
+                        child: GestureDetector(
+                          // When the child is tapped, show a snackbar.
+                          onTap: () {
+                            setState(() {
+                              if (Data.submittedPicks) {
+                                return;
+                              }
+                              Data.finalPicks.champ = Data.finalPicks.teamRight;
+                              Data.updateWhetherWeHaveAllPicks();
+                            });
+                          },
+                          // The custom button
+                          child: TeamBoxItem(
+                            teamName: Data.finalPicks.teamRight?.name ?? "",
+                            teamImageName:
+                                Data.finalPicks.teamRight?.imageName ?? "",
+                            seed: Data.finalPicks.teamRight?.seed ?? -1,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 40,
+                        child: CustomPaint(
+                          size: const Size(40, 1600),
+                          painter: TwoToOnePainter(5, backwards: true),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 250,
+                        child: RoundColumn(
+                          regionTop: Data.regionEast,
+                          regionBottom: Data.regionMidWest,
+                          refresh: () => {setState(() {})},
+                          round: 4,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 40,
+                        child: CustomPaint(
+                          size: const Size(40, 1600),
+                          painter: TwoToOnePainter(4, backwards: true),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 250,
+                        child: RoundColumn(
+                          regionTop: Data.regionEast,
+                          regionBottom: Data.regionMidWest,
+                          refresh: () => {setState(() {})},
+                          round: 3,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 40,
+                        child: CustomPaint(
+                          size: const Size(40, 1600),
+                          painter: TwoToOnePainter(3, backwards: true),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 250,
+                        child: RoundColumn(
+                          regionTop: Data.regionEast,
+                          regionBottom: Data.regionMidWest,
+                          refresh: () => {setState(() {})},
+                          round: 2,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 40,
+                        child: CustomPaint(
+                          size: const Size(40, 1600),
+                          painter: TwoToOnePainter(2, backwards: true),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 250,
+                        child: RoundColumn(
+                          regionTop: Data.regionEast,
+                          regionBottom: Data.regionMidWest,
+                          refresh: () => {setState(() {})},
+                          round: 1,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 40,
+                        child: CustomPaint(
+                          size: const Size(40, 1600),
+                          painter: TwoToOnePainter(1, backwards: true),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 250,
+                        child: TeamColumn(
+                          regionTop: Data.regionEast,
+                          regionBottom: Data.regionMidWest,
+                          refresh: () => {setState(() {})},
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            StandingsTab(reloadNotifier: _reloadStandingsNotifier),
+          ],
+        ),
+        floatingActionButton:
+            _tabController.index == 0
+                ? _getFloatingButton()
+                : _getStandingsFloatingButton(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       );
     }
+  }
+
+  Widget? _getStandingsFloatingButton() {
+    return FloatingActionButton.extended(
+      heroTag: "reloadStandings",
+      onPressed: () {
+        _reloadStandingsNotifier.value++;
+      },
+      backgroundColor: Colors.blue,
+      label: const Text(
+        "Reload Standings",
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      ),
+      icon: const Icon(Icons.refresh, color: Colors.white),
+    );
   }
 
   Widget? _getFloatingButton() {
