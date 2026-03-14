@@ -19,6 +19,11 @@ class BlurryDialog extends StatefulWidget {
 
 class _BlurryDialogState extends State<BlurryDialog> {
   final _formKey = GlobalKey<FormState>();
+  final _nameFieldKey = GlobalKey<FormFieldState<String>>();
+  final _cityFieldKey = GlobalKey<FormFieldState<String>>();
+  final _codeFieldKey = GlobalKey<FormFieldState<String>>();
+  final _countryFieldKey = GlobalKey<FormFieldState<String>>();
+  final _emailFieldKey = GlobalKey<FormFieldState<String>>();
   _BlurryDialogState();
   TextStyle textStyle = const TextStyle(color: Colors.black);
   final _privStyle = const TextStyle(color: Colors.grey, fontSize: 10);
@@ -43,19 +48,21 @@ class _BlurryDialogState extends State<BlurryDialog> {
             child: Column(
               children: <Widget>[
                 TextFormField(
+                  key: _nameFieldKey,
                   focusNode: _nameFocus,
                   onFieldSubmitted: (_) {
                     FocusScope.of(context).requestFocus(_cityFocus);
                   },
                   onSaved: (newValue) => {Data.submission.name = newValue!},
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (value) => validateNotEmpty(value, _nameFocus),
+                  validator: validateNotEmpty,
                   decoration: const InputDecoration(
                     labelText: 'Real Name',
                     icon: Icon(Icons.account_box),
                   ),
                 ),
                 TextFormField(
+                  key: _cityFieldKey,
                   focusNode: _cityFocus,
                   onFieldSubmitted: (_) {
                     FocusScope.of(context).requestFocus(_codeFocus);
@@ -63,43 +70,46 @@ class _BlurryDialogState extends State<BlurryDialog> {
                   onSaved: (newValue) =>
                       {Data.submission.cityState = newValue!},
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (value) => validateNotEmpty(value, _cityFocus),
+                  validator: validateNotEmpty,
                   decoration: const InputDecoration(
                     labelText: 'City, State',
                     icon: Icon(Icons.location_city),
                   ),
                 ),
                 TextFormField(
+                  key: _codeFieldKey,
                   focusNode: _codeFocus,
                   onFieldSubmitted: (_) {
                     FocusScope.of(context).requestFocus(_countryFocus);
                   },
                   onSaved: (newValue) => {Data.submission.postal = newValue!},
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (value) => validateNotEmpty(value, _codeFocus),
+                  validator: validateNotEmpty,
                   decoration: const InputDecoration(
                     labelText: 'Postal Code',
                     icon: Icon(Icons.numbers),
                   ),
                 ),
                 TextFormField(
+                  key: _countryFieldKey,
                   focusNode: _countryFocus,
                   onFieldSubmitted: (_) {
                     FocusScope.of(context).requestFocus(_emailFocus);
                   },
                   onSaved: (newValue) => {Data.submission.country = newValue!},
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (value) => validateNotEmpty(value, _countryFocus),
+                  validator: validateNotEmpty,
                   decoration: const InputDecoration(
                     labelText: 'Country',
                     icon: Icon(Icons.map),
                   ),
                 ),
                 TextFormField(
+                  key: _emailFieldKey,
                   focusNode: _emailFocus,
                   onSaved: (newValue) => {Data.submission.email = newValue!},
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (value) => validateNotEmpty(value, _emailFocus),
+                  validator: validateNotEmpty,
                   decoration: const InputDecoration(
                     labelText: 'Email',
                     icon: Icon(Icons.email),
@@ -142,6 +152,8 @@ class _BlurryDialogState extends State<BlurryDialog> {
                       if (_formKey.currentState!.validate()) {
                         _formKey.currentState!.save();
                         widget.continueCallBack();
+                      } else {
+                        _focusFirstInvalidField();
                       }
                     },
                     style: TextButton.styleFrom(
@@ -162,12 +174,32 @@ class _BlurryDialogState extends State<BlurryDialog> {
         ));
   }
 
-  String? validateNotEmpty(String? value, FocusNode focus) {
-    if (value == null || value.length < 5) {
-      focus.requestFocus();
+  String? validateNotEmpty(String? value) {
+    if (value == null || value.trim().length < 5) {
       return 'Value required here.';
-    } else {
-      return null;
+    }
+    return null;
+  }
+
+  void _focusFirstInvalidField() {
+    if (_nameFieldKey.currentState?.hasError ?? false) {
+      _nameFocus.requestFocus();
+      return;
+    }
+    if (_cityFieldKey.currentState?.hasError ?? false) {
+      _cityFocus.requestFocus();
+      return;
+    }
+    if (_codeFieldKey.currentState?.hasError ?? false) {
+      _codeFocus.requestFocus();
+      return;
+    }
+    if (_countryFieldKey.currentState?.hasError ?? false) {
+      _countryFocus.requestFocus();
+      return;
+    }
+    if (_emailFieldKey.currentState?.hasError ?? false) {
+      _emailFocus.requestFocus();
     }
   }
 }

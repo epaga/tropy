@@ -42,6 +42,7 @@ class _StandingsTabState extends State<StandingsTab> {
   List<StandingEntry>? _sorted;
   bool _isLoading = false;
   String? _errorMessage;
+  String _emptyMessage = 'No standings found.';
 
   SortColumn _sortCol = SortColumn.totalPts;
   bool _sortAsc = false; // default: highest pts first
@@ -64,16 +65,32 @@ class _StandingsTabState extends State<StandingsTab> {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
+      _emptyMessage = 'No standings found.';
     });
 
     try {
       final response = await http.get(Uri.parse(
-        'https://docs.google.com/spreadsheets/d/13VK3qf4l6N5HQeQPOXj3sSSWGatWWzF7nWb7AHEn8ug/export?format=csv&gid=0',
+        'https://docs.google.com/spreadsheets/d/1fV19NHTP7gFtLNB36XOF8nmoNBc5bjXqXHxMAfmR3oo/export?format=csv&gid=0',
       ));
 
       if (response.statusCode == 200) {
         final csvData =
             const CsvToListConverter(eol: "\n").convert(response.body);
+
+        final notOpenYet = csvData.isNotEmpty &&
+            csvData.first.any((cell) => cell
+                .toString()
+                .toLowerCase()
+                .contains('not open yet'));
+        if (notOpenYet) {
+          setState(() {
+            _entries = const [];
+            _applySort();
+            _emptyMessage = 'No standings available yet!';
+            _isLoading = false;
+          });
+          return;
+        }
 
         // Skip row 0 (title) and row 1 (header "Rank, First Last…")
         // Format: [empty, Rank, Name, Pts, %, UpPts, FinalPicks, FF, ...]
@@ -217,9 +234,9 @@ class _StandingsTabState extends State<StandingsTab> {
     }
 
     if (_sorted == null || _sorted!.isEmpty) {
-      return const Center(
-        child: Text('No standings found.',
-            style: TextStyle(color: Colors.grey, fontSize: 16)),
+      return Center(
+        child: Text(_emptyMessage,
+            style: const TextStyle(color: Colors.grey, fontSize: 16)),
       );
     }
 

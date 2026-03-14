@@ -1,11 +1,21 @@
 import 'dart:convert';
-
-import 'package:flutter/src/widgets/form.dart';
+import 'dart:math';
 
 import 'main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Data {
+  static final Random _random = Random();
+  static const String westRegionName = "West";
+  static const String eastRegionName = "East";
+  static const String southRegionName = "South";
+  static const String midWestRegionName = "MidWest";
+  static const Set<String> validRegionNames = {
+    westRegionName,
+    eastRegionName,
+    southRegionName,
+    midWestRegionName,
+  };
   static List<Pair> pairings = [
     Pair(1, 16),
     Pair(8, 9),
@@ -25,6 +35,10 @@ class Data {
   static Region regionEast = Region(teams: [], name: "", picks: []);
   static Region regionSouth = Region(teams: [], name: "", picks: []);
   static Region regionMidWest = Region(teams: [], name: "", picks: []);
+  static String leftTopRegionName = southRegionName;
+  static String leftBottomRegionName = westRegionName;
+  static String rightTopRegionName = eastRegionName;
+  static String rightBottomRegionName = midWestRegionName;
   static bool notReadyYet = true;
   static String csvUrl = 'https://smoothtrack.app/tropy/initialdata.csv';
   static bool needPassword = false;
@@ -42,6 +56,108 @@ class Data {
     prefs.setString('regionMidwest', jsonEncode(regionMidWest.toJson()));
     prefs.setString('regionSouth', jsonEncode(regionSouth.toJson()));
     prefs.setString('finalPicks', jsonEncode(finalPicks.toJson()));
+    prefs.setString('leftTopRegionName', leftTopRegionName);
+    prefs.setString('leftBottomRegionName', leftBottomRegionName);
+    prefs.setString('rightTopRegionName', rightTopRegionName);
+    prefs.setString('rightBottomRegionName', rightBottomRegionName);
+  }
+
+  static void resetBracketLayoutToDefault() {
+    setBracketLayout(
+      leftTop: southRegionName,
+      leftBottom: westRegionName,
+      rightTop: eastRegionName,
+      rightBottom: midWestRegionName,
+    );
+  }
+
+  static void loadBracketLayoutFromPrefs(SharedPreferences prefs) {
+    setBracketLayout(
+      leftTop: prefs.getString('leftTopRegionName') ?? southRegionName,
+      leftBottom: prefs.getString('leftBottomRegionName') ?? westRegionName,
+      rightTop: prefs.getString('rightTopRegionName') ?? eastRegionName,
+      rightBottom:
+          prefs.getString('rightBottomRegionName') ?? midWestRegionName,
+    );
+  }
+
+  static void setBracketLayout({
+    required String leftTop,
+    required String leftBottom,
+    required String rightTop,
+    required String rightBottom,
+  }) {
+    final normalized = [
+      _canonicalRegionName(leftTop),
+      _canonicalRegionName(leftBottom),
+      _canonicalRegionName(rightTop),
+      _canonicalRegionName(rightBottom),
+    ];
+    final containsInvalid = normalized.any((name) => name == null);
+    if (containsInvalid || normalized.toSet().length != 4) {
+      leftTopRegionName = southRegionName;
+      leftBottomRegionName = westRegionName;
+      rightTopRegionName = eastRegionName;
+      rightBottomRegionName = midWestRegionName;
+      return;
+    }
+
+    leftTopRegionName = normalized[0]!;
+    leftBottomRegionName = normalized[1]!;
+    rightTopRegionName = normalized[2]!;
+    rightBottomRegionName = normalized[3]!;
+  }
+
+  static void applyBracketLayoutFromCsv(List<List<dynamic>> list) {
+    final layoutRow = list.cast<List<dynamic>?>().firstWhere(
+      (row) =>
+          row != null &&
+          row.length >= 5 &&
+          row[0].toString().trim().toUpperCase() == "BRACKET_LAYOUT",
+      orElse: () => null,
+    );
+
+    if (layoutRow == null) {
+      resetBracketLayoutToDefault();
+      return;
+    }
+
+    setBracketLayout(
+      leftTop: layoutRow[1].toString(),
+      leftBottom: layoutRow[2].toString(),
+      rightTop: layoutRow[3].toString(),
+      rightBottom: layoutRow[4].toString(),
+    );
+  }
+
+  static String? _canonicalRegionName(String input) {
+    final normalized = input.trim().toLowerCase();
+    for (final regionName in validRegionNames) {
+      if (regionName.toLowerCase() == normalized) {
+        return regionName;
+      }
+    }
+    return null;
+  }
+
+  static Region regionByName(String regionName) {
+    switch (regionName) {
+      case westRegionName:
+        return regionWest;
+      case eastRegionName:
+        return regionEast;
+      case southRegionName:
+        return regionSouth;
+      case midWestRegionName:
+        return regionMidWest;
+      default:
+        return regionSouth;
+    }
+  }
+
+  static bool isLeftSideRegion(String regionName) {
+    return regionName == leftTopRegionName ||
+        regionName == leftBottomRegionName;
   }
 
   static void updateWhetherWeHaveAllPicks() {
@@ -64,6 +180,66 @@ class Data {
     regionMidWest = _resetRegion(regionMidWest);
     finalPicks = FinalPicks();
     updateWhetherWeHaveAllPicks();
+  }
+
+  static bool autofillRandomPicks() {
+    if (regionWest.teams.isEmpty ||
+        regionEast.teams.isEmpty ||
+        regionSouth.teams.isEmpty ||
+        regionMidWest.teams.isEmpty) {
+      return false;
+    }
+
+    resetPicks();
+
+    _autofillRegion(regionWest);
+    _autofillRegion(regionEast);
+    _autofillRegion(regionSouth);
+    _autofillRegion(regionMidWest);
+
+    final leftSideWinners = <Team>[
+      if (regionByName(leftTopRegionName).picks[3][0] != null)
+        regionByName(leftTopRegionName).picks[3][0]!,
+      if (regionByName(leftBottomRegionName).picks[3][0] != null)
+        regionByName(leftBottomRegionName).picks[3][0]!,
+    ];
+    final rightSideWinners = <Team>[
+      if (regionByName(rightTopRegionName).picks[3][0] != null)
+        regionByName(rightTopRegionName).picks[3][0]!,
+      if (regionByName(rightBottomRegionName).picks[3][0] != null)
+        regionByName(rightBottomRegionName).picks[3][0]!,
+    ];
+
+    if (leftSideWinners.isEmpty || rightSideWinners.isEmpty) {
+      return false;
+    }
+
+    finalPicks.teamLeft =
+        leftSideWinners[_random.nextInt(leftSideWinners.length)];
+    finalPicks.teamRight =
+        rightSideWinners[_random.nextInt(rightSideWinners.length)];
+    finalPicks.champ =
+        _random.nextBool() ? finalPicks.teamLeft : finalPicks.teamRight;
+
+    updateWhetherWeHaveAllPicks();
+    return true;
+  }
+
+  static void _autofillRegion(Region region) {
+    for (var i = 0; i < pairings.length; i++) {
+      final pair = pairings[i];
+      final teamA = region.teamBySeed(pair.a) as Team;
+      final teamB = region.teamBySeed(pair.b) as Team;
+      region.picks[0][i] = _random.nextBool() ? teamA : teamB;
+    }
+
+    for (var round = 1; round < 4; round++) {
+      for (var i = 0; i < region.picks[round].length; i++) {
+        final previousA = region.picks[round - 1][i * 2]!;
+        final previousB = region.picks[round - 1][i * 2 + 1]!;
+        region.picks[round][i] = _random.nextBool() ? previousA : previousB;
+      }
+    }
   }
 
   static Region _resetRegion(Region region) {
@@ -175,7 +351,12 @@ Region region(String regionName, List<List<dynamic>> list) {
     ],
     teams:
         list
-            .where((element) => element[2] == regionName)
+            .where(
+              (element) =>
+                  element.length >= 4 &&
+                  element[1] is num &&
+                  element[2].toString().trim() == regionName,
+            )
             .map(
               (e) =>
                   Team(name: e[0], seed: e[1], region: e[2], imageName: e[3]),

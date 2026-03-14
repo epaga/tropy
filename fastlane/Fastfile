@@ -1,0 +1,93 @@
+default_platform(:ios)
+
+require "json"
+require "shellwords"
+
+def project_root
+  File.expand_path("..", __dir__)
+end
+
+def pubspec_path
+  File.join(project_root, "pubspec.yaml")
+end
+
+private_lane :next_build_number do
+  content = File.read(pubspec_path)
+  match = content.match(/^version:\s*([0-9]+\.[0-9]+\.[0-9]+)\+([0-9]+)\s*$/)
+  UI.user_error!("Could not parse version from pubspec.yaml") unless match
+
+  version_name = match[1]
+  incremented_build = match[2].to_i + 1
+  updated_line = "version: #{version_name}+#{incremented_build}"
+  updated_content = content.sub(match[0], updated_line)
+
+  File.write(pubspec_path, updated_content)
+  UI.message("Updated pubspec build number to #{incremented_build}")
+  incremented_build
+end
+
+private_lane :upload_testflight do
+  ipa_path = Dir[File.join(project_root, "build/ios/ipa/*.ipa")].first
+  UI.user_error!("No IPA found in build/ios/ipa") unless ipa_path
+
+  api_key_json_path = File.join(project_root, "fastlane/appstore_api_key.json")
+  api_key_cfg = JSON.parse(File.read(api_key_json_path))
+  p8_path = File.expand_path(api_key_cfg.fetch("key_filepath"), project_root)
+
+  api_key = app_store_connect_api_key(
+    key_id: api_key_cfg.fetch("key_id"),
+    issuer_id: api_key_cfg.fetch("issuer_id"),
+    key_filepath: p8_path,
+    in_house: api_key_cfg.fetch("in_house", false)
+  )
+
+  upload_to_testflight(
+    ipa: ipa_path,
+    app_identifier: "com.epaga.tropy",
+    api_key: api_key,
+    skip_waiting_for_build_processing: true
+  )
+end
+
+private_lane :upload_play_beta do
+  aab_path = File.join(project_root, "build/app/outputs/bundle/release/app-release.aab")
+  UI.user_error!("No AAB found at #{aab_path}") unless File.exist?(aab_path)
+
+  upload_to_play_store(
+    aab: aab_path,
+    package_name: "com.epaga.tropy",
+    track: "beta",
+    json_key: File.join(project_root, "fastlane/google-play-key.json"),
+    skip_upload_images: true,
+    skip_upload_screenshots: true,
+    skip_upload_metadata: true
+  )
+end
+
+platform :ios do
+  desc "Upload existing IPA to TestFlight"
+  lane :upload_ipa do
+    upload_testflight
+  end
+
+  desc "Increment build number, build iOS+Android, upload to TestFlight and Play beta"
+  lane :release_beta do
+    build_number = next_build_number
+    escaped_root = project_root.shellescape
+
+    sh("cd #{escaped_root} && flutter pub get")
+    sh("cd #{escaped_root}/ios && pod install")
+    sh("cd #{escaped_root} && flutter build ipa --release --build-number #{build_number}")
+    sh("cd #{escaped_root} && flutter build appbundle --release --build-number #{build_number}")
+
+    upload_testflight
+    upload_play_beta
+  end
+end
+
+platform :android do
+  desc "Upload existing AAB to Google Play beta track"
+  lane :upload_aab do
+    upload_play_beta
+  end
+end

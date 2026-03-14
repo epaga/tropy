@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:http/http.dart' as http;
 import 'package:csv/csv.dart';
@@ -31,6 +32,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final ValueNotifier<int> _reloadStandingsNotifier = ValueNotifier<int>(0);
+  Timer? _resetAutofillTimer;
 
   @override
   void initState() {
@@ -43,6 +45,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
 
   @override
   void dispose() {
+    _resetAutofillTimer?.cancel();
     _tabController.dispose();
     _reloadStandingsNotifier.dispose();
     super.dispose();
@@ -103,6 +106,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         Data.finalPicks = FinalPicks.fromJson(
           jsonDecode(prefs.getString('finalPicks')!),
         );
+        Data.loadBracketLayoutFromPrefs(prefs);
         Data.notReadyYet = false;
         Data.updateWhetherWeHaveAllPicks();
         setState(() {});
@@ -123,6 +127,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
       Data.notReadyYet = true;
     } else {
       Data.notReadyYet = false;
+      Data.applyBracketLayoutFromCsv(list);
       Data.regionWest = region("West", list);
       Data.regionEast = region("East", list);
       Data.regionMidWest = region("MidWest", list);
@@ -171,6 +176,10 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         ),
       );
     } else {
+      final leftTopRegion = Data.regionByName(Data.leftTopRegionName);
+      final leftBottomRegion = Data.regionByName(Data.leftBottomRegionName);
+      final rightTopRegion = Data.regionByName(Data.rightTopRegionName);
+      final rightBottomRegion = Data.regionByName(Data.rightBottomRegionName);
       return Scaffold(
         appBar: AppBar(
           toolbarHeight: 0,
@@ -204,8 +213,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                       SizedBox(
                         width: 250,
                         child: TeamColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionWest,
+                          regionTop: leftTopRegion,
+                          regionBottom: leftBottomRegion,
                           refresh: () => {setState(() {})},
                         ),
                       ),
@@ -219,8 +228,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                       SizedBox(
                         width: 250,
                         child: RoundColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionWest,
+                          regionTop: leftTopRegion,
+                          regionBottom: leftBottomRegion,
                           refresh: () => {setState(() {})},
                           round: 1,
                         ),
@@ -235,8 +244,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                       SizedBox(
                         width: 250,
                         child: RoundColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionWest,
+                          regionTop: leftTopRegion,
+                          regionBottom: leftBottomRegion,
                           refresh: () => {setState(() {})},
                           round: 2,
                         ),
@@ -251,8 +260,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                       SizedBox(
                         width: 250,
                         child: RoundColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionWest,
+                          regionTop: leftTopRegion,
+                          regionBottom: leftBottomRegion,
                           refresh: () => {setState(() {})},
                           round: 3,
                         ),
@@ -267,8 +276,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                       SizedBox(
                         width: 250,
                         child: RoundColumn(
-                          regionTop: Data.regionSouth,
-                          regionBottom: Data.regionWest,
+                          regionTop: leftTopRegion,
+                          regionBottom: leftBottomRegion,
                           refresh: () => {setState(() {})},
                           round: 4,
                         ),
@@ -356,8 +365,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                       SizedBox(
                         width: 250,
                         child: RoundColumn(
-                          regionTop: Data.regionEast,
-                          regionBottom: Data.regionMidWest,
+                          regionTop: rightTopRegion,
+                          regionBottom: rightBottomRegion,
                           refresh: () => {setState(() {})},
                           round: 4,
                         ),
@@ -372,8 +381,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                       SizedBox(
                         width: 250,
                         child: RoundColumn(
-                          regionTop: Data.regionEast,
-                          regionBottom: Data.regionMidWest,
+                          regionTop: rightTopRegion,
+                          regionBottom: rightBottomRegion,
                           refresh: () => {setState(() {})},
                           round: 3,
                         ),
@@ -388,8 +397,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                       SizedBox(
                         width: 250,
                         child: RoundColumn(
-                          regionTop: Data.regionEast,
-                          regionBottom: Data.regionMidWest,
+                          regionTop: rightTopRegion,
+                          regionBottom: rightBottomRegion,
                           refresh: () => {setState(() {})},
                           round: 2,
                         ),
@@ -404,8 +413,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                       SizedBox(
                         width: 250,
                         child: RoundColumn(
-                          regionTop: Data.regionEast,
-                          regionBottom: Data.regionMidWest,
+                          regionTop: rightTopRegion,
+                          regionBottom: rightBottomRegion,
                           refresh: () => {setState(() {})},
                           round: 1,
                         ),
@@ -420,8 +429,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                       SizedBox(
                         width: 250,
                         child: TeamColumn(
-                          regionTop: Data.regionEast,
-                          regionBottom: Data.regionMidWest,
+                          regionTop: rightTopRegion,
+                          regionBottom: rightBottomRegion,
                           refresh: () => {setState(() {})},
                         ),
                       ),
@@ -458,11 +467,20 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   }
 
   Widget? _getFloatingButton() {
-    if (!Data.submittedPicks) {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FloatingActionButton.extended(
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Listener(
+          onPointerDown: (_) {
+            _startResetAutofillHold();
+          },
+          onPointerUp: (_) {
+            _cancelResetAutofillHold();
+          },
+          onPointerCancel: (_) {
+            _cancelResetAutofillHold();
+          },
+          child: FloatingActionButton.extended(
             heroTag: "reset",
             onPressed: () {
               _showResetDialog(context);
@@ -470,6 +488,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
             backgroundColor: Colors.red,
             label: const Text("Reset"),
           ),
+        ),
+        if (!Data.submittedPicks) ...[
           const SizedBox(width: 12),
           FloatingActionButton(
             heroTag: "submit",
@@ -480,10 +500,49 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
             child: const Text("Submit"),
           ),
         ],
+      ],
+    );
+  }
+
+  void _startResetAutofillHold() {
+    _resetAutofillTimer?.cancel();
+    _resetAutofillTimer = Timer(const Duration(seconds: 5), () async {
+      final filled = Data.autofillRandomPicks();
+      if (!filled) {
+        if (!mounted) {
+          return;
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            duration: Duration(seconds: 3),
+            content: Text("Bracket data is not loaded yet."),
+          ),
+        );
+        return;
+      }
+
+      if (Data.submittedPicks) {
+        Data.submittedPicks = false;
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool("submittedPicks", false);
+      }
+
+      if (!mounted) {
+        return;
+      }
+      setState(() {});
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          duration: Duration(seconds: 4),
+          content: Text("Random picks generated."),
+        ),
       );
-    } else {
-      return null;
-    }
+    });
+  }
+
+  void _cancelResetAutofillHold() {
+    _resetAutofillTimer?.cancel();
+    _resetAutofillTimer = null;
   }
 
   _createTropyEntry(String postData) async {
@@ -556,12 +615,17 @@ entry.650515796: Picks      */
   }
 
   void _showResetDialog(BuildContext context) {
+    final hasSubmitted = Data.submittedPicks;
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("Reset picks?"),
-          content: const Text("Are you sure? This cannot be undone."),
+          content: Text(
+            hasSubmitted
+                ? "You've already submitted your entry. Do you want to reset so that you can submit someone else's entry?"
+                : "Are you sure? This cannot be undone.",
+          ),
           actions: [
             TextButton(
               onPressed: () {
@@ -571,9 +635,18 @@ entry.650515796: Picks      */
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(context).pop();
                 Data.resetPicks();
+                if (hasSubmitted) {
+                  Data.submittedPicks = false;
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  await prefs.setBool("submittedPicks", false);
+                }
+                if (!mounted) {
+                  return;
+                }
                 setState(() {});
               },
               child: const Text("Reset everything"),
@@ -688,12 +761,11 @@ class Region {
       i++;
     }
   }
-  // south <-> west
-  // east <-> midwest
+  // Final Four side (left/right) comes from Data's current bracket layout.
 
   pick(round, team) {
     if (round == 4) {
-      if (name == Data.regionSouth.name || name == Data.regionWest.name) {
+      if (Data.isLeftSideRegion(name)) {
         removePicksOfTeamAfter(round, Data.finalPicks.teamLeft);
         Data.finalPicks.teamLeft = team;
       } else {
